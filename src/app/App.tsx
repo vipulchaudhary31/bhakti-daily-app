@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  ArrowUpRight,
   BellRinging,
   CaretLeft,
   CaretRight,
@@ -12,7 +13,6 @@ import {
   MusicNotes,
   Pause,
   Play,
-  PlayCircle,
   Plus,
   Quotes,
 } from "@phosphor-icons/react";
@@ -29,9 +29,16 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "@/app/components/ui/drawer";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/app/components/ui/dialog";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Toaster } from "@/app/components/ui/sonner";
 import { Switch } from "@/app/components/ui/switch";
@@ -42,10 +49,14 @@ import { toast } from "sonner";
 type Screen =
   | "home"
   | "alarm"
+  | "alarm-ringing"
+  | "notification-permission-modal"
+  | "ringtone-settings-permission-modal"
   | "alarm-mantra"
   | "ringtone"
   | "videos"
   | "wallpaper"
+  | "onboarding-god-select"
   | "mantra-choose"
   | "mantra-count"
   | "mantra-session";
@@ -86,6 +97,12 @@ type WallpaperOption = {
 
 type WallpaperPlacement = "lock" | "home" | "both";
 type MantraCountOption = "11" | "21" | "51" | "108" | "540" | "infinite";
+type OnboardingGodOption = {
+  id: string;
+  title: string;
+  imageSrc: string;
+  imagePosition?: string;
+};
 
 const assetUrl = (path: string) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
@@ -391,6 +408,82 @@ const bhaktiVideoCategories = [
     subtitle: "Long-form spiritual listening sessions",
   },
 ];
+const onboardingGodOptions: OnboardingGodOption[] = [
+  {
+    id: "hanuman",
+    title: "Lord Hanuman",
+    imageSrc: assetUrl("onboarding/hanuman.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "krishna",
+    title: "Lord Krishna",
+    imageSrc: assetUrl("onboarding/krishna.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "khatu-shyam",
+    title: "Khatu Shyam",
+    imageSrc: assetUrl("onboarding/khatu-shyam.jpg"),
+    imagePosition: "center center",
+  },
+  {
+    id: "mahadev",
+    title: "Lord Mahadev",
+    imageSrc: assetUrl("onboarding/mahadev.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "lakshmi",
+    title: "Maa Lakshmi",
+    imageSrc: assetUrl("onboarding/lakshmi.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "saraswati",
+    title: "Maa Saraswati",
+    imageSrc: assetUrl("onboarding/saraswati.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "ganesha",
+    title: "Lord Ganesha",
+    imageSrc: assetUrl("onboarding/ganesha.jpg"),
+    imagePosition: "center top",
+  },
+  {
+    id: "rama",
+    title: "Lord Rama",
+    imageSrc: assetUrl("onboarding/rama.jpg"),
+    imagePosition: "center top",
+  },
+];
+const hiddenScreenOptions: Array<{
+  screen: Screen;
+  title: string;
+  description: string;
+}> = [
+  {
+    screen: "onboarding-god-select",
+    title: "Choose God Onboarding",
+    description: "Standalone onboarding preview screen",
+  },
+  {
+    screen: "alarm-ringing",
+    title: "Alarm Ringing",
+    description: "Standalone ringing alarm preview screen",
+  },
+  {
+    screen: "notification-permission-modal",
+    title: "Notification Modal",
+    description: "Standalone permission modal preview",
+  },
+  {
+    screen: "ringtone-settings-permission-modal",
+    title: "Ringtone Permission Modal",
+    description: "Standalone system settings permission modal preview",
+  },
+];
 const mantraCountOptions: Array<{
   value: MantraCountOption;
   label: string;
@@ -527,6 +620,8 @@ function App() {
   const [selectedWallpaperId, setSelectedWallpaperId] = useState<string | null>(
     null,
   );
+  const [selectedOnboardingGodId, setSelectedOnboardingGodId] =
+    useState<string | null>(onboardingGodOptions[0]?.id ?? null);
   const [selectedWallpaperFilter, setSelectedWallpaperFilter] =
     useState("All");
   const [lockWallpaperId, setLockWallpaperId] = useState<string | null>(null);
@@ -541,10 +636,14 @@ function App() {
   useEffect(() => {
   const initialScreen =
       initialScreenParam === "alarm" ||
+      initialScreenParam === "alarm-ringing" ||
+      initialScreenParam === "notification-permission-modal" ||
+      initialScreenParam === "ringtone-settings-permission-modal" ||
       initialScreenParam === "alarm-mantra" ||
       initialScreenParam === "ringtone" ||
       initialScreenParam === "videos" ||
       initialScreenParam === "wallpaper" ||
+      initialScreenParam === "onboarding-god-select" ||
       initialScreenParam === "mantra-choose" ||
       initialScreenParam === "mantra-count" ||
       initialScreenParam === "mantra-session"
@@ -558,10 +657,14 @@ function App() {
       const nextScreen = event.state?.screen;
       setScreen(
         nextScreen === "alarm" ||
+          nextScreen === "alarm-ringing" ||
+          nextScreen === "notification-permission-modal" ||
+          nextScreen === "ringtone-settings-permission-modal" ||
           nextScreen === "alarm-mantra" ||
           nextScreen === "ringtone" ||
           nextScreen === "videos" ||
           nextScreen === "wallpaper" ||
+          nextScreen === "onboarding-god-select" ||
           nextScreen === "mantra-choose" ||
           nextScreen === "mantra-count" ||
           nextScreen === "mantra-session"
@@ -629,6 +732,11 @@ function App() {
   const openVideosScreen = () => {
     window.history.pushState({ screen: "videos" }, "", window.location.href);
     setScreen("videos");
+  };
+
+  const openStandaloneScreen = (nextScreen: Screen) => {
+    window.history.pushState({ screen: nextScreen }, "", window.location.href);
+    setScreen(nextScreen);
   };
 
   const openWallpaperScreen = () => {
@@ -775,6 +883,10 @@ function App() {
     setActiveHomeFeature("Mantra");
   };
 
+  const handleOnboardingNext = () => {
+    toast("This onboarding preview is not connected to the full flow yet.");
+  };
+
   return (
     <main className="h-dvh overflow-hidden bg-background text-foreground">
       {screen === "home" ? (
@@ -791,6 +903,8 @@ function App() {
           onOpenChantingMantraScreen={openChantingMantraScreen}
           onOpenSavedMantraSession={openSavedMantraSession}
           onOpenRingtoneScreen={openRingtoneScreen}
+          onOpenVideosScreen={openVideosScreen}
+          onOpenStandaloneScreen={openStandaloneScreen}
           onOpenWallpaperScreen={openWallpaperScreen}
           onOpenWallpaperScreenForTarget={openWallpaperScreenForTarget}
           onToggleAlarm={handleToggleAlarm}
@@ -813,6 +927,44 @@ function App() {
           onSave={handleSaveAlarm}
           onDelete={handleDeleteAlarm}
           isEditing={Boolean(editingAlarmId)}
+        />
+      ) : screen === "alarm-ringing" ? (
+        <AlarmRingingScreen
+          hour={hour}
+          minute={minute}
+          period={period}
+          mantra={selectedMantra}
+          onBack={goBack}
+          onDismiss={() => {
+            toast("Dismissed preview alarm.");
+          }}
+          onSnooze={() => {
+            toast("Snoozed for 10 minutes.");
+          }}
+        />
+      ) : screen === "notification-permission-modal" ? (
+        <NotificationPermissionModalScreen
+          onBack={goBack}
+          onNotNow={() => {
+            window.history.pushState({ screen: "home" }, "", window.location.href);
+            setScreen("home");
+          }}
+          onOpenSettings={() => {
+            window.history.pushState({ screen: "home" }, "", window.location.href);
+            setScreen("home");
+          }}
+        />
+      ) : screen === "ringtone-settings-permission-modal" ? (
+        <RingtoneSettingsPermissionModalScreen
+          onBack={goBack}
+          onNotNow={() => {
+            window.history.pushState({ screen: "home" }, "", window.location.href);
+            setScreen("home");
+          }}
+          onOpenSettings={() => {
+            window.history.pushState({ screen: "home" }, "", window.location.href);
+            setScreen("home");
+          }}
         />
       ) : (
         screen === "alarm-mantra" ? (
@@ -859,6 +1011,14 @@ function App() {
               onChangeFilter={setSelectedRingtoneFilter}
               onSave={handleSaveRingtone}
               onSelectRingtone={setSelectedRingtoneId}
+            />
+          ) : screen === "onboarding-god-select" ? (
+            <ChooseGodOnboardingScreen
+              gods={onboardingGodOptions}
+              selectedGodId={selectedOnboardingGodId}
+              onBack={goBack}
+              onNext={handleOnboardingNext}
+              onSelectGod={setSelectedOnboardingGodId}
             />
           ) : screen === "videos" ? (
             <BhaktiVideosScreen onBack={goBack} />
@@ -908,6 +1068,8 @@ function HomeScreen({
   onOpenChantingMantraScreen,
   onOpenSavedMantraSession,
   onOpenRingtoneScreen,
+  onOpenVideosScreen,
+  onOpenStandaloneScreen,
   onOpenWallpaperScreen,
   onOpenWallpaperScreenForTarget,
   onToggleAlarm,
@@ -925,6 +1087,8 @@ function HomeScreen({
   onOpenChantingMantraScreen: () => void;
   onOpenSavedMantraSession: () => void;
   onOpenRingtoneScreen: () => void;
+  onOpenVideosScreen: () => void;
+  onOpenStandaloneScreen: (screen: Screen) => void;
   onOpenWallpaperScreen: () => void;
   onOpenWallpaperScreenForTarget: (target: WallpaperPlacement) => void;
   onToggleAlarm: (alarmId: string, enabled: boolean) => void;
@@ -935,21 +1099,90 @@ function HomeScreen({
   const isRingtoneFeature = activeFeature === "Ringtone";
   const isWallpaperFeature = activeFeature === "Wallpaper";
   const ringtonePreview = usePreviewAudio(savedRingtone?.audioSrc);
+  const [hiddenScreenMenuOpen, setHiddenScreenMenuOpen] = useState(false);
   const hasAnyWallpaper = Boolean(lockWallpaper || homeWallpaper);
   const hasSharedWallpaper =
     Boolean(lockWallpaper && homeWallpaper) &&
     lockWallpaper?.id === homeWallpaper?.id;
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressActivatedRef = useRef(false);
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current !== null) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  const isInteractiveTarget = (target: EventTarget | null) =>
+    target instanceof HTMLElement &&
+    Boolean(target.closest("button, input, select, textarea, a, [role='button']"));
+
+  const startLongPress = (target: EventTarget | null) => {
+    if (isInteractiveTarget(target)) {
+      return;
+    }
+
+    clearLongPress();
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressActivatedRef.current = true;
+      setHiddenScreenMenuOpen(true);
+      clearLongPress();
+    }, 550);
+  };
+
+  useEffect(() => clearLongPress, []);
 
   return (
-    <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-5 md:hidden">
-      <header className="flex items-start gap-4">
+    <section
+      className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-5 md:hidden"
+      onMouseDown={(event) => startLongPress(event.target)}
+      onMouseUp={clearLongPress}
+      onMouseLeave={clearLongPress}
+      onTouchStart={(event) => startLongPress(event.target)}
+      onTouchEnd={clearLongPress}
+      onTouchCancel={clearLongPress}
+      onTouchMove={clearLongPress}
+      onClickCapture={(event) => {
+        if (longPressActivatedRef.current) {
+          event.preventDefault();
+          event.stopPropagation();
+          longPressActivatedRef.current = false;
+        }
+      }}
+    >
+      <header className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-xs leading-5 text-muted-foreground">
-            Good morning
+            Welcome
           </p>
           <h1 className="text-xl font-medium leading-7 tracking-tight">
-            Namaste! Avinash
+            Namaste!
           </h1>
+        </div>
+        <div className="mt-0.5 flex shrink-0 items-center gap-1.5 rounded-full border border-[rgba(238,228,214,0.95)] bg-[linear-gradient(180deg,rgba(255,251,246,0.96)_0%,rgba(248,241,231,0.98)_100%)] px-2 py-1 text-[11px] font-medium text-foreground shadow-[0_1px_1px_rgba(15,23,42,0.04)]">
+          <div className="relative h-6 w-8 shrink-0" aria-hidden>
+            {[
+              assetUrl("wallpapers/temple-light.jpg"),
+              assetUrl("wallpapers/saffron-dawn.jpg"),
+              assetUrl("wallpapers/quiet-tree.jpg"),
+            ].map((src, index) => (
+              <span
+                key={src}
+                className="absolute top-1/2 block size-5 -translate-y-1/2 overflow-hidden rounded-full border-[1.5px] border-white shadow-sm"
+                style={{ left: `${index * 8}px`, zIndex: 3 - index }}
+              >
+                <img
+                  src={src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </span>
+            ))}
+          </div>
+          <span className="whitespace-nowrap">Bhakti Videos</span>
+          <ArrowUpRight className="size-3 opacity-55" weight="regular" aria-hidden />
         </div>
       </header>
 
@@ -976,7 +1209,7 @@ function HomeScreen({
         })}
       </section>
 
-      <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-8">
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-6">
         <div className="min-h-0 flex-1">
           <div className="h-full w-full">
             {isAlarmFeature && alarms.length ? (
@@ -1311,6 +1544,395 @@ function HomeScreen({
           ) : null}
         </div>
       </section>
+      <Drawer open={hiddenScreenMenuOpen} onOpenChange={setHiddenScreenMenuOpen}>
+        <DrawerContent className="rounded-t-3xl border-border bg-background px-1 [&>div:first-child]:mt-3 [&>div:first-child]:h-1 [&>div:first-child]:w-10 [&>div:first-child]:bg-border">
+          <DrawerHeader className="px-4 pb-2 pt-5 text-left">
+            <DrawerTitle className="text-base font-medium">
+              Preview Screens
+            </DrawerTitle>
+            <DrawerDescription>
+              Long press the home screen to open standalone previews.
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <div className="space-y-2 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+            {hiddenScreenOptions.map((option) => (
+              <button
+                key={option.screen}
+                type="button"
+                onClick={() => {
+                  setHiddenScreenMenuOpen(false);
+                  onOpenStandaloneScreen(option.screen);
+                }}
+                className="flex w-full items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-4 text-left outline-none transition-colors hover:bg-accent/30 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium leading-5 text-foreground">
+                    {option.title}
+                  </p>
+                  <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                    {option.description}
+                  </p>
+                </div>
+                <CaretRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </section>
+  );
+}
+
+function ChooseGodOnboardingScreen({
+  gods,
+  selectedGodId,
+  onBack,
+  onNext,
+  onSelectGod,
+}: {
+  gods: OnboardingGodOption[];
+  selectedGodId: string | null;
+  onBack: () => void;
+  onNext: () => void;
+  onSelectGod: (godId: string) => void;
+}) {
+  return (
+    <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-4 md:hidden">
+      <header className="grid h-10 grid-cols-[2.25rem_1fr_2.25rem] items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-9 justify-self-start rounded-md"
+          onClick={onBack}
+        >
+          <CaretLeft className="size-6" weight="regular" aria-hidden />
+          <span className="sr-only">Back</span>
+        </Button>
+        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+          Choose God To Listen To
+        </h1>
+      </header>
+
+      <div className="min-h-0 flex-1 overflow-y-auto pt-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 pb-32">
+          {gods.map((god) => {
+            const selected = selectedGodId === god.id;
+
+            return (
+              <button
+                key={god.id}
+                type="button"
+                onClick={() => onSelectGod(god.id)}
+                className="text-center outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                <div
+                  className={cn(
+                    "overflow-hidden rounded-[1.35rem] border bg-card shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition-all",
+                    selected
+                      ? "border-primary ring-2 ring-primary/20"
+                      : "border-border",
+                  )}
+                >
+                  <img
+                    src={god.imageSrc}
+                    alt={god.title}
+                    className="h-40 w-full object-cover"
+                    style={{ objectPosition: god.imagePosition ?? "center" }}
+                    loading="lazy"
+                  />
+                </div>
+                <p
+                  className={cn(
+                    "mt-2 text-base font-medium leading-6 tracking-tight",
+                    selected ? "text-primary" : "text-foreground",
+                  )}
+                >
+                  {god.title}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="-mx-5 mt-auto bg-gradient-to-t from-background via-background/96 to-background/0 px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-4">
+        <Button
+          size="lg"
+          className="h-12 w-full rounded-full bg-[#F4D5A8] text-foreground shadow-none hover:bg-[#edcc9d]"
+          disabled={!selectedGodId}
+          onClick={onNext}
+        >
+          Next
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function AlarmRingingScreen({
+  hour,
+  minute,
+  period,
+  mantra,
+  onBack,
+  onDismiss,
+  onSnooze,
+}: {
+  hour: string;
+  minute: string;
+  period: string;
+  mantra: MantraTrack;
+  onBack: () => void;
+  onDismiss: () => void;
+  onSnooze: () => void;
+}) {
+  return (
+    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f7f1e6] text-foreground md:hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_45%),linear-gradient(180deg,#fbf6ee_0%,#f6efe3_42%,#f2e5cf_100%)]" />
+      <div className="absolute left-1/2 top-[16%] size-64 -translate-x-1/2 rounded-full bg-[rgba(255,166,77,0.14)] blur-3xl" />
+
+      <div className="relative flex h-full flex-col px-5 pb-[max(1.1rem,env(safe-area-inset-bottom))] pt-5">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-9 rounded-full bg-white/75 text-foreground shadow-sm backdrop-blur-sm hover:bg-white"
+            onClick={onBack}
+          >
+            <CaretLeft className="size-5" weight="regular" aria-hidden />
+            <span className="sr-only">Back</span>
+          </Button>
+          <div className="size-9" aria-hidden />
+        </div>
+
+        <div className="flex flex-1 flex-col items-center justify-center pb-4 pt-6 text-center">
+          <div className="relative mb-6 flex size-40 items-center justify-center rounded-full border border-white/80 bg-white/55 shadow-[0_18px_40px_rgba(163,95,22,0.12)] backdrop-blur-sm">
+            <div className="absolute inset-3 rounded-full border border-[rgba(247,167,66,0.24)]" />
+            <div className="absolute inset-6 rounded-full border border-[rgba(247,167,66,0.18)]" />
+            <BellRinging className="size-14 text-primary" weight="regular" aria-hidden />
+          </div>
+
+          <div className="mt-2 flex items-end gap-2">
+            <span className="text-[4rem] font-medium leading-none tracking-tight">
+              {hour}:{minute}
+            </span>
+            <span className="pb-2 text-lg font-medium leading-none text-muted-foreground">
+              {period}
+            </span>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-lg font-medium leading-6 tracking-tight text-foreground">
+              {mantra.title}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <Button
+            size="lg"
+            className="h-12 w-full rounded-full bg-primary text-primary-foreground shadow-none"
+            onClick={onDismiss}
+          >
+            Dismiss Alarm
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NotificationPermissionModalScreen({
+  onBack,
+  onNotNow,
+  onOpenSettings,
+}: {
+  onBack: () => void;
+  onNotNow: () => void;
+  onOpenSettings: () => void;
+}) {
+  return (
+    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f7f1e6] md:hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#faf5ec_0%,#f6efe2_100%)]" />
+      <div className="relative flex h-full flex-col px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-5">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-9 rounded-full bg-white/75 text-foreground shadow-sm backdrop-blur-sm hover:bg-white"
+          onClick={onBack}
+        >
+          <CaretLeft className="size-5" weight="regular" aria-hidden />
+          <span className="sr-only">Back</span>
+        </Button>
+
+        <div className="mt-8 space-y-4 opacity-35 blur-[1.5px]">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 px-5 py-4">
+              <p className="text-4xl font-medium leading-none text-foreground">02</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 px-5 py-4">
+              <p className="text-4xl font-medium leading-none text-foreground">01</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Ramji Bhajan</p>
+                  <p className="text-sm text-muted-foreground">Every day · 6:30 AM</p>
+                </div>
+                <div className="h-7 w-12 rounded-full bg-[#f3d8a8]" />
+              </div>
+            </div>
+            <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Morning Mantra</p>
+                  <p className="text-sm text-muted-foreground">Weekdays · 7:00 AM</p>
+                </div>
+                <div className="h-7 w-12 rounded-full bg-white" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Dialog open>
+          <DialogContent
+            showCloseButton={false}
+            className="w-[calc(100%-2.5rem)] max-w-[22.5rem] gap-0 rounded-[2rem] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255,251,246,0.98)_100%)] px-6 pb-6 pt-7 text-center shadow-[0_28px_90px_rgba(72,47,18,0.18)]"
+            onInteractOutside={(event) => event.preventDefault()}
+            onEscapeKeyDown={(event) => event.preventDefault()}
+          >
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[linear-gradient(180deg,#fff6ea_0%,#fde8c9_100%)] text-[#7c5348] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+              <BellRinging className="size-8" weight="regular" aria-hidden />
+            </div>
+
+            <div className="mt-5">
+              <DialogTitle className="text-[1.9rem] font-medium leading-9 tracking-tight text-foreground">
+                Please allow notification permission
+              </DialogTitle>
+              <DialogDescription className="mx-auto mt-3 max-w-[16rem] text-base leading-6 text-muted-foreground">
+                Allow notifications so your alarm can ring and remind you.
+              </DialogDescription>
+            </div>
+
+            <div className="mt-7 grid grid-cols-[1fr_auto] items-center gap-3">
+              <button
+                type="button"
+                onClick={onNotNow}
+                className="h-12 rounded-full text-base font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                Not now
+              </button>
+              <Button
+                size="lg"
+                className="h-12 rounded-full px-6 text-base shadow-none"
+                onClick={onOpenSettings}
+              >
+                Open settings
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </section>
+  );
+}
+
+function RingtoneSettingsPermissionModalScreen({
+  onBack,
+  onNotNow,
+  onOpenSettings,
+}: {
+  onBack: () => void;
+  onNotNow: () => void;
+  onOpenSettings: () => void;
+}) {
+  return (
+    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f7f1e6] md:hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#faf5ec_0%,#f6efe2_100%)]" />
+      <div className="relative flex h-full flex-col px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-5">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-9 rounded-full bg-white/75 text-foreground shadow-sm backdrop-blur-sm hover:bg-white"
+          onClick={onBack}
+        >
+          <CaretLeft className="size-5" weight="regular" aria-hidden />
+          <span className="sr-only">Back</span>
+        </Button>
+
+        <div className="mt-8 space-y-3 opacity-35 blur-[1.5px]">
+          <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">Temple Bells</p>
+                <p className="text-sm text-muted-foreground">Selected ringtone</p>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-sm"
+                className="rounded-full"
+                disabled
+              >
+                <Play className="size-4" weight="fill" aria-hidden />
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">Apply as alarm sound</p>
+                <p className="text-sm text-muted-foreground">
+                  Needs system settings access
+                </p>
+              </div>
+              <div className="h-10 w-24 rounded-full bg-[#f3d8a8]" />
+            </div>
+          </div>
+        </div>
+
+        <Dialog open>
+          <DialogContent
+            showCloseButton={false}
+            className="w-[calc(100%-2.5rem)] max-w-[22.5rem] gap-0 rounded-[2rem] border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(255,251,246,0.98)_100%)] px-6 pb-6 pt-7 text-center shadow-[0_28px_90px_rgba(72,47,18,0.18)]"
+            onInteractOutside={(event) => event.preventDefault()}
+            onEscapeKeyDown={(event) => event.preventDefault()}
+          >
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[linear-gradient(180deg,#fff6ea_0%,#fde8c9_100%)] text-[#7c5348] shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]">
+              <MusicNotes className="size-8" weight="regular" aria-hidden />
+            </div>
+
+            <div className="mt-5">
+              <DialogTitle className="text-[1.75rem] font-medium leading-8 tracking-tight text-foreground">
+                Please allow ringtone permission
+              </DialogTitle>
+              <DialogDescription className="mx-auto mt-3 max-w-[16.5rem] text-base leading-6 text-muted-foreground">
+                To set a ringtone, allow this app to change system settings in your phone settings.
+              </DialogDescription>
+            </div>
+
+            <div className="mt-7 grid grid-cols-[1fr_auto] items-center gap-3">
+              <button
+                type="button"
+                onClick={onNotNow}
+                className="h-12 rounded-full text-base font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                Not now
+              </button>
+              <Button
+                size="lg"
+                className="h-12 rounded-full px-6 text-base shadow-none"
+                onClick={onOpenSettings}
+              >
+                Open settings
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </section>
   );
 }
@@ -1544,9 +2166,9 @@ function AlarmScreen({
           >
             Delete alarm
           </Button>
-        ) : null}
-      </div>
-    </section>
+          ) : null}
+        </div>
+      </section>
   );
 }
 
@@ -1882,7 +2504,7 @@ function MantraSessionScreen({
 
       <Button
         size="lg"
-        className="h-12 w-full rounded-full text-sm shadow-none"
+        className="h-11 w-full rounded-xl text-sm shadow-none"
         onClick={() => {
           audioRef.current?.pause();
           audioRef.current && (audioRef.current.currentTime = 0);
@@ -2110,40 +2732,44 @@ function ChooseWallpaperScreen({
             </div>
           </section>
 
-          <div className="-mx-5 flex min-h-0 flex-1 overflow-x-auto px-5 pb-2 [scrollbar-width:none] snap-x snap-mandatory [scroll-padding-inline:1.25rem] [&::-webkit-scrollbar]:hidden">
+          <div className="min-h-0 flex-1 overflow-y-auto snap-y snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {filteredWallpapers.map((wallpaper) => {
               const selected = wallpaper.id === selectedWallpaperId;
 
               return (
-                <button
+                <div
                   key={wallpaper.id}
-                  type="button"
-                  onClick={() => onSelectWallpaper(wallpaper.id)}
-                  className={cn(
-                    "relative mr-3 aspect-[9/16] w-[calc(100vw-3.25rem)] max-w-[320px] shrink-0 snap-center snap-always overflow-hidden rounded-[1.75rem] border text-left outline-none transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 last:mr-0",
-                    selected
-                      ? "border-primary ring-2 ring-primary/25"
-                      : "border-border bg-secondary",
-                  )}
+                  className="flex min-h-full snap-center items-center justify-center pb-3"
                 >
-                  <img
-                    src={wallpaper.imageSrc}
-                    alt={wallpaper.title}
-                    className="h-full w-full object-cover"
-                    loading="eager"
-                    decoding="async"
-                  />
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => onSelectWallpaper(wallpaper.id)}
                     className={cn(
-                      "absolute right-4 top-4 flex size-8 items-center justify-center rounded-full border bg-background/92 text-transparent shadow-sm backdrop-blur transition-colors",
-                      selected &&
-                        "border-primary bg-primary text-primary-foreground",
+                      "relative aspect-[9/16] w-[calc(100vw-3.25rem)] max-w-[320px] shrink-0 overflow-hidden rounded-[1.75rem] border text-left outline-none transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                      selected
+                        ? "border-primary ring-2 ring-primary/25"
+                        : "border-border bg-secondary",
                     )}
-                    aria-hidden
                   >
-                    <Check className="size-4" weight="bold" />
-                  </span>
-                </button>
+                    <img
+                      src={wallpaper.imageSrc}
+                      alt={wallpaper.title}
+                      className="h-full w-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
+                    <span
+                      className={cn(
+                        "absolute right-4 top-4 flex size-8 items-center justify-center rounded-full border bg-background/92 text-transparent shadow-sm backdrop-blur transition-colors",
+                        selected &&
+                          "border-primary bg-primary text-primary-foreground",
+                      )}
+                      aria-hidden
+                    >
+                      <Check className="size-4" weight="bold" />
+                    </span>
+                  </button>
+                </div>
               );
             })}
           </div>
