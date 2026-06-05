@@ -85,7 +85,7 @@ type WallpaperOption = {
 };
 
 type WallpaperPlacement = "lock" | "home" | "both";
-type MantraCountOption = "11" | "21" | "51" | "100" | "540" | "infinite";
+type MantraCountOption = "11" | "21" | "51" | "108" | "540" | "infinite";
 
 const assetUrl = (path: string) =>
   `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
@@ -394,14 +394,13 @@ const bhaktiVideoCategories = [
 const mantraCountOptions: Array<{
   value: MantraCountOption;
   label: string;
-  description: string;
 }> = [
-  { value: "11", label: "11", description: "Short session" },
-  { value: "21", label: "21", description: "Gentle focus" },
-  { value: "51", label: "51", description: "Steady rhythm" },
-  { value: "100", label: "100", description: "Deep practice" },
-  { value: "540", label: "540", description: "Long session" },
-  { value: "infinite", label: "Infinite", description: "Until you stop" },
+  { value: "11", label: "11 times" },
+  { value: "21", label: "21 times" },
+  { value: "51", label: "51 times" },
+  { value: "108", label: "108 times" },
+  { value: "540", label: "540 times" },
+  { value: "infinite", label: "Infinite" },
 ];
 
 function usePreviewAudio(src?: string) {
@@ -506,7 +505,7 @@ function App() {
   const [hour, setHour] = useState("01");
   const [minute, setMinute] = useState("00");
   const [period, setPeriod] = useState("PM");
-  const [selectedDays, setSelectedDays] = useState(["Wed"]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [selectedMantraId, setSelectedMantraId] = useState("ramji-bhajan");
   const [selectedMantraFilter, setSelectedMantraFilter] = useState("All");
   const [selectedChantMantraId, setSelectedChantMantraId] =
@@ -577,6 +576,7 @@ function App() {
 
   const openAlarmScreen = () => {
     setEditingAlarmId(null);
+    setSelectedDays([]);
     window.history.pushState({ screen: "alarm" }, "", window.location.href);
     setScreen("alarm");
   };
@@ -840,7 +840,6 @@ function App() {
         ) : screen === "mantra-count" ? (
           <MantraCountScreen
             count={selectedChantCount}
-            mantraTitle={selectedChantMantra.title}
             onBack={goBack}
             onNext={openMantraSessionScreen}
             onSelectCount={setSelectedChantCount}
@@ -1269,12 +1268,14 @@ function HomeScreen({
                   </p>
                 </div>
 
-                {!isAlarmFeature ? (
+                {(isAlarmFeature || isRingtoneFeature || isWallpaperFeature || isMantraFeature) ? (
                   <Button
                     size="lg"
                     className="mt-6 h-11 rounded-xl px-5 text-sm shadow-none"
                     onClick={
-                      isRingtoneFeature
+                      isAlarmFeature
+                        ? onSetAlarm
+                        : isRingtoneFeature
                         ? onOpenRingtoneScreen
                         : isWallpaperFeature
                           ? onOpenWallpaperScreen
@@ -1283,7 +1284,9 @@ function HomeScreen({
                             : undefined
                     }
                   >
-                    {isRingtoneFeature
+                    {isAlarmFeature
+                      ? "Create Alarm"
+                      : isRingtoneFeature
                       ? "Set Ringtone"
                       : isMantraFeature
                         ? "Start Chanting Mantra"
@@ -1296,7 +1299,7 @@ function HomeScreen({
         </div>
 
         <div className="flex justify-end pb-1">
-          {isAlarmFeature && !alarms.length ? (
+          {isAlarmFeature && alarms.length > 0 ? (
             <Button
               size="lg"
               className="h-12 rounded-full px-5 text-sm shadow-sm"
@@ -1626,7 +1629,7 @@ function ChooseMantraScreen({
                     className={cn(
                       "h-8 rounded-full px-3 text-xs font-medium shadow-none",
                       activeFilter === filter
-                        ? "bg-secondary text-foreground hover:bg-secondary"
+                        ? "bg-secondary text-black hover:bg-secondary"
                         : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                     )}
                 >
@@ -1680,13 +1683,11 @@ function ChooseMantraScreen({
 
 function MantraCountScreen({
   count,
-  mantraTitle,
   onBack,
   onNext,
   onSelectCount,
 }: {
   count: MantraCountOption;
-  mantraTitle: string;
   onBack: () => void;
   onNext: () => void;
   onSelectCount: (value: MantraCountOption) => void;
@@ -1709,14 +1710,8 @@ function MantraCountScreen({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-5 pt-5">
-        <section className="space-y-1">
-          <p className="text-sm font-medium leading-5">Selected mantra</p>
-          <p className="text-sm leading-5 text-muted-foreground">
-            {mantraTitle}
-          </p>
-        </section>
-
-        <section className="grid grid-cols-2 gap-3">
+        <section className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="divide-y divide-border/80">
           {mantraCountOptions.map((option) => {
             const selected = option.value === count;
 
@@ -1726,21 +1721,29 @@ function MantraCountScreen({
                 type="button"
                 onClick={() => onSelectCount(option.value)}
                 className={cn(
-                  "rounded-2xl border px-4 py-4 text-left outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                  selected
-                    ? "border-primary bg-primary/10"
-                    : "border-border bg-card hover:bg-accent/40",
+                  "flex min-h-14 w-full items-center gap-3 py-3 text-left outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                  "text-foreground",
                 )}
               >
-                <p className="text-lg font-medium leading-6 tracking-tight text-foreground">
+                <span
+                  className={cn(
+                    "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+                    selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-transparent",
+                  )}
+                  aria-hidden
+                >
+                  <Check className="size-3.5" weight="bold" />
+                </span>
+
+                <span className="block truncate text-sm font-medium leading-5 text-foreground">
                   {option.label}
-                </p>
-                <p className="mt-1 text-sm leading-5 text-muted-foreground">
-                  {option.description}
-                </p>
+                </span>
               </button>
             );
           })}
+          </div>
         </section>
       </div>
 
@@ -1970,7 +1973,7 @@ function ChooseRingtoneScreen({
                     className={cn(
                       "h-8 rounded-full px-3 text-xs font-medium shadow-none",
                       activeFilter === filter
-                        ? "bg-secondary text-foreground hover:bg-secondary"
+                        ? "bg-secondary text-black hover:bg-secondary"
                         : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                     )}
                 >
@@ -2096,7 +2099,7 @@ function ChooseWallpaperScreen({
                       className={cn(
                         "h-8 rounded-full px-3 text-xs font-medium shadow-none",
                         activeFilter === filter
-                          ? "bg-secondary text-foreground hover:bg-secondary"
+                          ? "bg-secondary text-black hover:bg-secondary"
                           : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
                       )}
                 >
