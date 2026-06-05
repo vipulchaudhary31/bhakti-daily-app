@@ -42,7 +42,7 @@ const Toaster = ({ theme, className, ...props }: ToasterProps) => {
       }}
       toastOptions={{
         classNames: {
-          toast: "rounded-2xl border-transparent",
+          toast: "rounded-2xl border-transparent shadow-lg",
           title: "text-sm font-medium leading-5 tracking-tight",
           description: "text-sm text-muted-foreground",
           content: "flex min-w-0 flex-1 flex-col gap-0.5",

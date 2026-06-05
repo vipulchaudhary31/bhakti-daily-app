@@ -898,6 +898,7 @@ function App() {
           savedRingtone={savedRingtone}
           lockWallpaper={lockWallpaper}
           homeWallpaper={homeWallpaper}
+          greeting="Jai Shree Ram"
           onChangeFeature={setActiveHomeFeature}
           onOpenAlarm={openExistingAlarm}
           onOpenChantingMantraScreen={openChantingMantraScreen}
@@ -1063,6 +1064,7 @@ function HomeScreen({
   savedRingtone,
   lockWallpaper,
   homeWallpaper,
+  greeting,
   onChangeFeature,
   onOpenAlarm,
   onOpenChantingMantraScreen,
@@ -1082,6 +1084,7 @@ function HomeScreen({
   savedRingtone: RingtoneTrack | null;
   lockWallpaper: WallpaperOption | null;
   homeWallpaper: WallpaperOption | null;
+  greeting: string;
   onChangeFeature: (feature: HomeFeature) => void;
   onOpenAlarm: (alarm: SavedAlarm) => void;
   onOpenChantingMantraScreen: () => void;
@@ -1157,7 +1160,7 @@ function HomeScreen({
             Welcome
           </p>
           <h1 className="text-xl font-medium leading-7 tracking-tight">
-            Namaste!
+            {greeting}
           </h1>
         </div>
         <div className="mt-0.5 flex shrink-0 items-center gap-1.5 rounded-full border border-[rgba(238,228,214,0.95)] bg-[linear-gradient(180deg,rgba(255,251,246,0.96)_0%,rgba(248,241,231,0.98)_100%)] px-2 py-1 text-[11px] font-medium text-foreground shadow-[0_1px_1px_rgba(15,23,42,0.04)]">
@@ -2452,9 +2455,13 @@ function MantraSessionScreen({
     : circumference - progress * circumference;
 
   return (
-    <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-secondary px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] md:hidden">
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center text-center">
-        <div className="flex size-24 items-center justify-center rounded-full bg-card text-primary">
+    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f8f0e4] px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] md:hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#fff1d6_0%,#ffe0ac_18%,#f8ecdc_42%,#f7efe5_100%)]" />
+      <div className="absolute inset-x-0 top-0 h-[42%] bg-[radial-gradient(circle_at_top,rgba(255,122,0,0.34),rgba(255,149,43,0.24)_28%,rgba(255,196,124,0.12)_52%,transparent_74%)]" />
+      <div className="absolute left-1/2 top-[16%] size-[22rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,111,0,0.24)_0%,rgba(255,163,72,0.14)_38%,rgba(255,210,159,0.04)_68%,transparent_78%)] blur-2xl" />
+
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center text-center">
+        <div className="flex size-24 items-center justify-center rounded-full bg-[rgba(255,255,255,0.78)] text-primary shadow-[0_18px_44px_rgba(255,120,20,0.18)] backdrop-blur-sm">
           <Quotes className="size-9" weight="regular" aria-hidden />
         </div>
 
@@ -2464,39 +2471,51 @@ function MantraSessionScreen({
           </h1>
         </div>
 
-        <div className="mt-8 flex items-center justify-center">
-          <div className="relative flex size-52 items-center justify-center">
+        <div className="mt-10 flex items-center justify-center">
+          <div className="relative flex size-60 items-center justify-center">
+            <div className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.64)_0%,rgba(255,255,255,0.28)_56%,transparent_74%)] blur-sm" />
             <svg
               viewBox="0 0 180 180"
-              className="-rotate-90 size-full"
+              className="-rotate-90 size-full drop-shadow-[0_10px_26px_rgba(255,120,20,0.16)]"
               aria-hidden
             >
               <circle
                 cx="90"
                 cy="90"
                 r={circleRadius}
-                className="fill-none stroke-border"
+                className="fill-none"
+                stroke="rgba(138,96,43,0.12)"
                 strokeWidth="10"
               />
               <circle
                 cx="90"
                 cy="90"
                 r={circleRadius}
-                className="fill-none stroke-primary transition-[stroke-dashoffset]"
+                className="fill-none transition-[stroke-dashoffset]"
+                stroke="url(#mantraProgressGradient)"
                 strokeWidth="10"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeOffset}
               />
+              <defs>
+                <linearGradient id="mantraProgressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ff8a1f" />
+                  <stop offset="55%" stopColor="#ff6b00" />
+                  <stop offset="100%" stopColor="#ffb14d" />
+                </linearGradient>
+              </defs>
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-5xl font-medium tracking-tight text-foreground">
-                {isInfinite ? "∞" : currentLoop}
-              </p>
-              <p className="mt-2 text-sm leading-5 text-muted-foreground">
-                {isInfinite ? "Infinite" : `of ${totalLoops}`}
-              </p>
+              <div className="flex size-40 flex-col items-center justify-center rounded-full bg-[rgba(255,255,255,0.82)] shadow-[0_12px_32px_rgba(112,76,23,0.08)] backdrop-blur-sm">
+                <p className="text-6xl font-medium tracking-tight text-foreground">
+                  {isInfinite ? "∞" : currentLoop}
+                </p>
+                <p className="mt-2 text-sm leading-5 text-muted-foreground">
+                  {isInfinite ? "Infinite" : `of ${totalLoops}`}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -2504,7 +2523,7 @@ function MantraSessionScreen({
 
       <Button
         size="lg"
-        className="h-11 w-full rounded-xl text-sm shadow-none"
+        className="relative h-12 w-full rounded-2xl bg-[linear-gradient(180deg,#ff8c22_0%,#ff6a00_100%)] text-white shadow-[0_16px_30px_rgba(255,111,0,0.28)] hover:bg-[linear-gradient(180deg,#ff8c22_0%,#ff6a00_100%)]"
         onClick={() => {
           audioRef.current?.pause();
           audioRef.current && (audioRef.current.currentTime = 0);
