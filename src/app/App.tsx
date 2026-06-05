@@ -2460,7 +2460,7 @@ function MantraSessionScreen({
       <div className="absolute inset-x-0 top-0 h-[42%] bg-[radial-gradient(circle_at_top,rgba(255,122,0,0.34),rgba(255,149,43,0.24)_28%,rgba(255,196,124,0.12)_52%,transparent_74%)]" />
       <div className="absolute left-1/2 top-[16%] size-[22rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,111,0,0.24)_0%,rgba(255,163,72,0.14)_38%,rgba(255,210,159,0.04)_68%,transparent_78%)] blur-2xl" />
 
-      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center text-center">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-start pt-8 text-center">
         <div className="flex size-24 items-center justify-center rounded-full bg-[rgba(255,255,255,0.78)] text-primary shadow-[0_18px_44px_rgba(255,120,20,0.18)] backdrop-blur-sm">
           <Quotes className="size-9" weight="regular" aria-hidden />
         </div>
@@ -2471,8 +2471,8 @@ function MantraSessionScreen({
           </h1>
         </div>
 
-        <div className="mt-10 flex items-center justify-center">
-          <div className="relative flex size-60 items-center justify-center">
+        <div className="mt-8 flex items-center justify-center">
+          <div className="relative flex size-56 items-center justify-center">
             <div className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.64)_0%,rgba(255,255,255,0.28)_56%,transparent_74%)] blur-sm" />
             <svg
               viewBox="0 0 180 180"
@@ -2508,7 +2508,7 @@ function MantraSessionScreen({
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="flex size-40 flex-col items-center justify-center rounded-full bg-[rgba(255,255,255,0.82)] shadow-[0_12px_32px_rgba(112,76,23,0.08)] backdrop-blur-sm">
+              <div className="flex size-[10.9rem] flex-col items-center justify-center rounded-full bg-[rgba(255,255,255,0.9)] shadow-[0_8px_20px_rgba(112,76,23,0.04)] backdrop-blur-sm">
                 <p className="text-6xl font-medium tracking-tight text-foreground">
                   {isInfinite ? "∞" : currentLoop}
                 </p>
@@ -2523,7 +2523,7 @@ function MantraSessionScreen({
 
       <Button
         size="lg"
-        className="relative h-12 w-full rounded-2xl bg-[linear-gradient(180deg,#ff8c22_0%,#ff6a00_100%)] text-white shadow-[0_16px_30px_rgba(255,111,0,0.28)] hover:bg-[linear-gradient(180deg,#ff8c22_0%,#ff6a00_100%)]"
+        className="mt-6 h-11 w-full shrink-0 rounded-xl bg-primary text-primary-foreground text-sm shadow-none hover:bg-primary/90"
         onClick={() => {
           audioRef.current?.pause();
           audioRef.current && (audioRef.current.currentTime = 0);
