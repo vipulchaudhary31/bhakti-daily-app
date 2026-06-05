@@ -16,30 +16,37 @@ const Toaster = ({ theme, className, ...props }: ToasterProps) => {
       theme={theme ?? "light"}
       richColors={false}
       visibleToasts={1}
-      offset={{ bottom: "calc(env(safe-area-inset-bottom) + 20px)" }}
-      mobileOffset={{ bottom: "calc(env(safe-area-inset-bottom) + 20px)" }}
+      offset={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
+      mobileOffset={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
       icons={{
-        success: <CheckCircle weight="fill" className="size-4" />,
-        error: <XCircle weight="fill" className="size-4" />,
-        warning: <WarningCircle weight="fill" className="size-4" />,
-        info: <Info weight="fill" className="size-4" />,
+        success: (
+          <span className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <CheckCircle weight="fill" className="size-4" />
+          </span>
+        ),
+        error: (
+          <span className="flex size-7 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <XCircle weight="fill" className="size-4" />
+          </span>
+        ),
+        warning: (
+          <span className="flex size-7 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+            <WarningCircle weight="fill" className="size-4" />
+          </span>
+        ),
+        info: (
+          <span className="flex size-7 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+            <Info weight="fill" className="size-4" />
+          </span>
+        ),
       }}
       toastOptions={{
         classNames: {
-          toast:
-            "rounded-2xl border border-border/80 bg-card text-card-foreground shadow-sm",
-          title: "text-sm font-medium",
+          toast: "rounded-2xl border-transparent",
+          title: "text-sm font-medium leading-5 tracking-tight",
           description: "text-sm text-muted-foreground",
-          content: "gap-0.5",
-          icon: "text-muted-foreground",
-          success:
-            "border-border/80 bg-card text-card-foreground",
-          error:
-            "border-border/80 bg-card text-card-foreground",
-          warning:
-            "border-border/80 bg-card text-card-foreground",
-          info:
-            "border-border/80 bg-card text-card-foreground",
+          content: "flex min-w-0 flex-1 flex-col gap-0.5",
+          icon: "!mt-0 !mr-2 !ml-0 !h-7 !w-7 flex shrink-0 items-center justify-center",
         },
       }}
       className={cn("toaster group", className)}

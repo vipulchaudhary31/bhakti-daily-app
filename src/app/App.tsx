@@ -12,6 +12,7 @@ import {
   MusicNotes,
   Pause,
   Play,
+  PlayCircle,
   Plus,
   Quotes,
 } from "@phosphor-icons/react";
@@ -43,6 +44,7 @@ type Screen =
   | "alarm"
   | "alarm-mantra"
   | "ringtone"
+  | "videos"
   | "wallpaper"
   | "mantra-choose"
   | "mantra-count"
@@ -84,6 +86,9 @@ type WallpaperOption = {
 
 type WallpaperPlacement = "lock" | "home" | "both";
 type MantraCountOption = "11" | "21" | "51" | "100" | "540" | "infinite";
+
+const assetUrl = (path: string) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 
 const featureTiles: Array<{
   label: string;
@@ -142,42 +147,126 @@ const mantraTracks: MantraTrack[] = [
     title: "Ramji Bhajan",
     deity: "Ramji",
     duration: "1:28",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "khatu-shyam-aarti",
     title: "Khatu Shyam Aarti",
     deity: "Khatu Shyam",
     duration: "2:14",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "ganesh-mantra",
     title: "Ganesh Mantra",
     deity: "Lord Ganesh",
     duration: "1:46",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "hanuman-chalisa-short",
     title: "Hanuman Chalisa",
     deity: "Lord Hanuman",
     duration: "2:03",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "shiv-dhun",
     title: "Shiv Dhun",
     deity: "Shivji",
     duration: "1:57",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "krishna-flute-bhajan",
     title: "Krishna Flute Bhajan",
     deity: "Krishna",
     duration: "2:21",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "ram-dhun",
+    title: "Ram Dhun",
+    deity: "Ramji",
+    duration: "1:52",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "siyaram-jaap",
+    title: "Siyaram Jaap",
+    deity: "Ramji",
+    duration: "2:08",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "ganpati-aarti",
+    title: "Ganpati Aarti",
+    deity: "Lord Ganesh",
+    duration: "1:59",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "vakratunda-mantra",
+    title: "Vakratunda Mantra",
+    deity: "Lord Ganesh",
+    duration: "1:41",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "hanuman-jaap",
+    title: "Hanuman Jaap",
+    deity: "Lord Hanuman",
+    duration: "2:05",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "bajrang-baan-short",
+    title: "Bajrang Baan",
+    deity: "Lord Hanuman",
+    duration: "2:18",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "shiv-manas-jaap",
+    title: "Shiv Manas Jaap",
+    deity: "Shivji",
+    duration: "2:11",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "om-namah-shivaya",
+    title: "Om Namah Shivaya",
+    deity: "Shivji",
+    duration: "1:49",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "krishna-nama",
+    title: "Krishna Nama",
+    deity: "Krishna",
+    duration: "1:56",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "govind-bolo",
+    title: "Govind Bolo",
+    deity: "Krishna",
+    duration: "2:12",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "shyam-bhajan",
+    title: "Shyam Bhajan",
+    deity: "Khatu Shyam",
+    duration: "2:07",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
+  },
+  {
+    id: "khatu-shyam-jaap",
+    title: "Khatu Shyam Jaap",
+    deity: "Khatu Shyam",
+    duration: "1:47",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
 ];
 
@@ -187,69 +276,119 @@ const ringtoneTracks: RingtoneTrack[] = [
     title: "Temple Bells",
     category: "Temple",
     duration: "1:18",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "sunrise-chime",
     title: "Sunrise Chime",
     category: "Chimes",
     duration: "1:09",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "soft-conch",
     title: "Soft Conch",
     category: "Temple",
     duration: "1:26",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "sandalwood-bells",
     title: "Sandalwood Bells",
     category: "Temple",
     duration: "1:14",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
   {
     id: "morning-aarti",
     title: "Morning Aarti",
     category: "Devotional",
     duration: "1:31",
-    audioSrc: "/gimme-that-groove.mp3",
+    audioSrc: assetUrl("gimme-that-groove.mp3"),
   },
 ];
 const ringtoneFilters = ["All", "Temple", "Chimes", "Devotional"];
 const wallpaperFilters = ["All", "Temple", "Sunrise", "Minimal", "Nature"];
 const wallpaperOptions: WallpaperOption[] = [
   {
-    id: "saffron-dawn",
-    title: "Saffron Dawn",
-    category: "Sunrise",
-    imageSrc: "/wallpapers/saffron-dawn.jpg",
-  },
-  {
     id: "lake-stillness",
     title: "Lake Stillness",
     category: "Nature",
-    imageSrc: "/wallpapers/lake-stillness.jpg",
+    imageSrc: assetUrl("wallpapers/lake-stillness.jpg"),
   },
   {
     id: "temple-light",
     title: "Temple Light",
     category: "Temple",
-    imageSrc: "/wallpapers/temple-light.jpg",
+    imageSrc: assetUrl("wallpapers/temple-light.jpg"),
   },
   {
     id: "quiet-tree",
     title: "Quiet Tree",
     category: "Sunrise",
-    imageSrc: "/wallpapers/quiet-tree.jpg",
+    imageSrc: assetUrl("wallpapers/quiet-tree.jpg"),
   },
   {
     id: "rolling-hills",
     title: "Rolling Hills",
     category: "Minimal",
-    imageSrc: "/wallpapers/rolling-hills.jpg",
+    imageSrc: assetUrl("wallpapers/rolling-hills.jpg"),
+  },
+  {
+    id: "saffron-dawn",
+    title: "Saffron Dawn",
+    category: "Sunrise",
+    imageSrc: assetUrl("wallpapers/saffron-dawn.jpg"),
+  },
+  {
+    id: "temple-courtyard",
+    title: "Temple Courtyard",
+    category: "Temple",
+    imageSrc: assetUrl("wallpapers/temple-light.jpg"),
+  },
+  {
+    id: "misty-pines",
+    title: "Misty Pines",
+    category: "Nature",
+    imageSrc: assetUrl("wallpapers/quiet-tree.jpg"),
+  },
+  {
+    id: "soft-horizon",
+    title: "Soft Horizon",
+    category: "Minimal",
+    imageSrc: assetUrl("wallpapers/rolling-hills.jpg"),
+  },
+  {
+    id: "sunlit-water",
+    title: "Sunlit Water",
+    category: "Sunrise",
+    imageSrc: assetUrl("wallpapers/lake-stillness.jpg"),
+  },
+];
+const bhaktiVideoCategories = [
+  {
+    title: "Morning Aarti",
+    subtitle: "Start the day with short devotional videos",
+  },
+  {
+    title: "Hanuman",
+    subtitle: "Chalisa, katha, and daily bhajans",
+  },
+  {
+    title: "Krishna",
+    subtitle: "Leelas, flute bhajans, and satsang clips",
+  },
+  {
+    title: "Shiv",
+    subtitle: "Mantras, dhun, and meditative chants",
+  },
+  {
+    title: "Kids Bhakti",
+    subtitle: "Simple stories and easy devotional songs",
+  },
+  {
+    title: "Kathas",
+    subtitle: "Long-form spiritual listening sessions",
   },
 ];
 const mantraCountOptions: Array<{
@@ -345,7 +484,17 @@ function usePreviewAudio(src?: string) {
     setIsPlaying(true);
   };
 
-  return { isPlaying, toggle, stop, play };
+  const restart = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    await audio.play();
+    setIsPlaying(true);
+  };
+
+  return { isPlaying, toggle, stop, play, restart };
 }
 
 function App() {
@@ -395,6 +544,7 @@ function App() {
       initialScreenParam === "alarm" ||
       initialScreenParam === "alarm-mantra" ||
       initialScreenParam === "ringtone" ||
+      initialScreenParam === "videos" ||
       initialScreenParam === "wallpaper" ||
       initialScreenParam === "mantra-choose" ||
       initialScreenParam === "mantra-count" ||
@@ -411,6 +561,7 @@ function App() {
         nextScreen === "alarm" ||
           nextScreen === "alarm-mantra" ||
           nextScreen === "ringtone" ||
+          nextScreen === "videos" ||
           nextScreen === "wallpaper" ||
           nextScreen === "mantra-choose" ||
           nextScreen === "mantra-count" ||
@@ -453,6 +604,13 @@ function App() {
     setScreen("mantra-choose");
   };
 
+  const openSavedMantraSession = () => {
+    setSelectedChantMantraId(savedChantMantraId ?? "ramji-bhajan");
+    setSelectedChantCount(savedChantCount);
+    window.history.pushState({ screen: "mantra-session" }, "", window.location.href);
+    setScreen("mantra-session");
+  };
+
   const openMantraCountScreen = () => {
     window.history.pushState({ screen: "mantra-count" }, "", window.location.href);
     setScreen("mantra-count");
@@ -466,6 +624,11 @@ function App() {
   const openRingtoneScreen = () => {
     window.history.pushState({ screen: "ringtone" }, "", window.location.href);
     setScreen("ringtone");
+  };
+
+  const openVideosScreen = () => {
+    window.history.pushState({ screen: "videos" }, "", window.location.href);
+    setScreen("videos");
   };
 
   const openWallpaperScreen = () => {
@@ -626,6 +789,7 @@ function App() {
           onChangeFeature={setActiveHomeFeature}
           onOpenAlarm={openExistingAlarm}
           onOpenChantingMantraScreen={openChantingMantraScreen}
+          onOpenSavedMantraSession={openSavedMantraSession}
           onOpenRingtoneScreen={openRingtoneScreen}
           onOpenWallpaperScreen={openWallpaperScreen}
           onOpenWallpaperScreenForTarget={openWallpaperScreenForTarget}
@@ -697,6 +861,8 @@ function App() {
               onSave={handleSaveRingtone}
               onSelectRingtone={setSelectedRingtoneId}
             />
+          ) : screen === "videos" ? (
+            <BhaktiVideosScreen onBack={goBack} />
           ) : (
             <ChooseWallpaperScreen
               activeFilter={selectedWallpaperFilter}
@@ -725,7 +891,7 @@ function App() {
           </CardHeader>
         </Card>
       </section>
-      <Toaster position="bottom-center" />
+      <Toaster position="top-center" />
     </main>
   );
 }
@@ -741,6 +907,7 @@ function HomeScreen({
   onChangeFeature,
   onOpenAlarm,
   onOpenChantingMantraScreen,
+  onOpenSavedMantraSession,
   onOpenRingtoneScreen,
   onOpenWallpaperScreen,
   onOpenWallpaperScreenForTarget,
@@ -757,6 +924,7 @@ function HomeScreen({
   onChangeFeature: (feature: HomeFeature) => void;
   onOpenAlarm: (alarm: SavedAlarm) => void;
   onOpenChantingMantraScreen: () => void;
+  onOpenSavedMantraSession: () => void;
   onOpenRingtoneScreen: () => void;
   onOpenWallpaperScreen: () => void;
   onOpenWallpaperScreenForTarget: (target: WallpaperPlacement) => void;
@@ -810,8 +978,8 @@ function HomeScreen({
       </section>
 
       <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-8">
-        <div className="flex min-h-0 flex-1 items-start justify-center">
-          <div className="w-full">
+        <div className="min-h-0 flex-1">
+          <div className="h-full w-full">
             {isAlarmFeature && alarms.length ? (
               <ScrollArea className="h-full pr-1">
                 <div className="space-y-3">
@@ -888,7 +1056,7 @@ function HomeScreen({
                         variant="secondary"
                         size="icon-sm"
                         className="shrink-0 rounded-full"
-                        onClick={onOpenChantingMantraScreen}
+                        onClick={onOpenSavedMantraSession}
                         aria-label="Start mantra session"
                       >
                         <Play className="size-4" weight="fill" aria-hidden />
@@ -1051,7 +1219,7 @@ function HomeScreen({
                 )}
               </div>
             ) : (
-              <div className="flex flex-col items-center pt-3">
+              <div className="-translate-y-4 flex h-full flex-col items-center justify-center">
                 <div className="mx-auto flex aspect-square w-full max-w-[min(150px,21dvh)] items-center justify-center rounded-2xl border border-border bg-secondary text-muted-foreground">
                   {isRingtoneFeature ? (
                     <MusicNotes
@@ -1072,7 +1240,7 @@ function HomeScreen({
                       aria-hidden
                     />
                   ) : (
-                    <ImageSquare
+                    <BellRinging
                       className="size-9 opacity-70"
                       weight="regular"
                       aria-hidden
@@ -1100,42 +1268,101 @@ function HomeScreen({
                       : "Set daily mantra and start your day with peace."}
                   </p>
                 </div>
+
+                {!isAlarmFeature ? (
+                  <Button
+                    size="lg"
+                    className="mt-6 h-11 rounded-xl px-5 text-sm shadow-none"
+                    onClick={
+                      isRingtoneFeature
+                        ? onOpenRingtoneScreen
+                        : isWallpaperFeature
+                          ? onOpenWallpaperScreen
+                          : isMantraFeature
+                            ? onOpenChantingMantraScreen
+                            : undefined
+                    }
+                  >
+                    {isRingtoneFeature
+                      ? "Set Ringtone"
+                      : isMantraFeature
+                        ? "Start Chanting Mantra"
+                        : "Set Wallpaper"}
+                  </Button>
+                ) : null}
               </div>
             )}
           </div>
         </div>
 
         <div className="flex justify-end pb-1">
-          {!(isMantraFeature && savedChantMantra) &&
-          !(isRingtoneFeature && savedRingtone) &&
-          !(isWallpaperFeature && hasAnyWallpaper) ? (
+          {isAlarmFeature && !alarms.length ? (
             <Button
               size="lg"
               className="h-12 rounded-full px-5 text-sm shadow-sm"
-              onClick={
-                isAlarmFeature
-                  ? onSetAlarm
-                  : isRingtoneFeature
-                    ? onOpenRingtoneScreen
-                    : isWallpaperFeature
-                      ? onOpenWallpaperScreen
-                    : isMantraFeature
-                      ? onOpenChantingMantraScreen
-                    : undefined
-              }
+              onClick={onSetAlarm}
             >
               <Plus className="size-4" weight="bold" aria-hidden />
-              {isRingtoneFeature
-                ? "Set Ringtone"
-                : isMantraFeature
-                  ? "Start Chanting Mantra"
-                : isWallpaperFeature
-                  ? "Set Wallpaper"
-                  : "Create Alarm"}
+              Create Alarm
             </Button>
           ) : null}
         </div>
       </section>
+    </section>
+  );
+}
+
+function BhaktiVideosScreen({ onBack }: { onBack: () => void }) {
+  return (
+    <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-4 md:hidden">
+      <header className="grid h-10 grid-cols-[2.25rem_1fr_2.25rem] items-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-9 justify-self-start rounded-md"
+          onClick={onBack}
+        >
+          <CaretLeft className="size-6" weight="regular" aria-hidden />
+          <span className="sr-only">Back</span>
+        </Button>
+        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+          Bhakti Videos
+        </h1>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-4 pt-5">
+        <div className="space-y-1">
+          <p className="text-sm font-medium leading-5">Categories</p>
+          <p className="text-sm leading-5 text-muted-foreground">
+            Explore devotional video learning by topic.
+          </p>
+        </div>
+
+        <ScrollArea className="min-h-0 flex-1 pr-1">
+          <div className="space-y-3 pb-1">
+            {bhaktiVideoCategories.map((category) => (
+              <Card
+                key={category.title}
+                className="gap-0 rounded-2xl border-border bg-card py-0 shadow-none"
+              >
+                <CardContent className="flex items-center justify-between gap-4 px-4 py-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+                      {category.title}
+                    </p>
+                    <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                      {category.subtitle}
+                    </p>
+                  </div>
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-foreground">
+                    <PlayCircle className="size-5" weight="regular" aria-hidden />
+                  </span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
     </section>
   );
 }
@@ -1193,7 +1420,7 @@ function AlarmScreen({
         </h1>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-5 pt-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 pt-5">
         <section>
           <p className="mb-3 text-sm font-medium leading-5">Time</p>
           <div className="relative grid grid-cols-[1fr_1fr_0.78fr] overflow-hidden rounded-xl bg-secondary p-2 text-center">
@@ -1217,7 +1444,7 @@ function AlarmScreen({
           </div>
         </section>
 
-        <section className="space-y-3">
+        <section className="space-y-3.5 pt-2">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-medium leading-5">Repeat</p>
@@ -1235,7 +1462,8 @@ function AlarmScreen({
             type="multiple"
             value={selectedDays}
             onValueChange={onSetSelectedDays}
-            className="grid w-full grid-cols-7 rounded-xl bg-secondary p-1"
+            spacing={2}
+            className="flex w-full items-center justify-between"
           >
             {repeatDays.map((day) => (
               <ToggleGroupItem
@@ -1245,10 +1473,9 @@ function AlarmScreen({
                 size="sm"
                 aria-label={day.label}
                 className={cn(
-                  "h-9 min-w-0 rounded-lg px-0 text-sm font-medium shadow-none transition-colors hover:bg-background/70 hover:text-foreground",
-                  "text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-foreground",
-                  allDaysSelected &&
-                    "data-[state=on]:bg-card data-[state=on]:text-foreground",
+                  "flex size-9 items-center justify-center rounded-full px-0 text-xs font-medium shadow-none transition-colors",
+                  "bg-secondary text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  "data-[state=on]:bg-primary data-[state=on]:text-primary-foreground",
                 )}
               >
                 {day.shortLabel}
@@ -1257,23 +1484,15 @@ function AlarmScreen({
           </ToggleGroup>
         </section>
 
-        <section className="rounded-xl bg-card px-3 py-3">
+        <section className="space-y-3 pt-2">
+          <p className="text-sm font-medium leading-5">Mantra</p>
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="block text-sm font-medium leading-5">
-                Mantra
-              </span>
-              <span className="mt-0.5 block truncate text-sm leading-5 text-muted-foreground">
-                {selectedMantra.title}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1">
+            <div className="flex min-w-0 items-center gap-3">
               <Button
                 type="button"
                 variant="secondary"
                 size="icon-sm"
-                className="rounded-full"
+                className="shrink-0 rounded-full"
                 onClick={mantraPreview.toggle}
                 aria-label={mantraPreview.isPlaying ? "Pause mantra preview" : "Play mantra preview"}
               >
@@ -1284,17 +1503,23 @@ function AlarmScreen({
                 )}
               </Button>
 
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="rounded-lg px-2.5 text-primary"
-                onClick={onOpenMantra}
-              >
-                Change
-                <CaretRight className="size-4" aria-hidden />
-              </Button>
+              <div className="min-w-0">
+                <span className="block truncate text-sm leading-5 text-muted-foreground">
+                  {selectedMantra.title}
+                </span>
+              </div>
             </div>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="shrink-0 rounded-lg px-2.5 text-primary"
+              onClick={onOpenMantra}
+            >
+              Change
+              <CaretRight className="size-4" aria-hidden />
+            </Button>
           </div>
         </section>
       </div>
@@ -1361,7 +1586,7 @@ function ChooseMantraScreen({
       return;
     }
 
-    void selectedPreview.play();
+    void selectedPreview.restart();
   }, [selectedTrack.id]);
 
   useEffect(() => {
@@ -1398,12 +1623,12 @@ function ChooseMantraScreen({
                   variant="ghost"
                   size="sm"
                   onClick={() => onChangeFilter(filter)}
-                  className={cn(
-                    "h-8 rounded-full px-3 text-xs font-medium shadow-none",
-                    activeFilter === filter
-                      ? "bg-secondary text-foreground hover:bg-secondary"
-                      : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
-                  )}
+                    className={cn(
+                      "h-8 rounded-full px-3 text-xs font-medium shadow-none",
+                      activeFilter === filter
+                        ? "bg-secondary text-foreground hover:bg-secondary"
+                        : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
+                    )}
                 >
                   {filter}
                 </Button>
@@ -1412,7 +1637,7 @@ function ChooseMantraScreen({
           </div>
         </section>
 
-        <ScrollArea className="min-h-0 flex-1">
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="divide-y divide-border/80">
             {filteredTracks.map((track) => (
               <MantraTrackRow
@@ -1439,7 +1664,7 @@ function ChooseMantraScreen({
               />
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       <Button
@@ -1595,77 +1820,65 @@ function MantraSessionScreen({
   }, [mantra.audioSrc, totalLoops]);
 
   const progress = totalLoops ? Math.min(currentLoop / totalLoops, 1) : 0;
+  const circleRadius = 72;
+  const circumference = 2 * Math.PI * circleRadius;
+  const strokeOffset = isInfinite
+    ? circumference * 0.35
+    : circumference - progress * circumference;
 
   return (
     <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-secondary px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] md:hidden">
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center text-center">
-        <div className="flex size-28 items-center justify-center rounded-full bg-card text-primary">
-          <Quotes className="size-10" weight="regular" aria-hidden />
+        <div className="flex size-24 items-center justify-center rounded-full bg-card text-primary">
+          <Quotes className="size-9" weight="regular" aria-hidden />
         </div>
 
-        <div className="mt-8 space-y-2">
-          <p className="text-sm font-medium leading-5 text-muted-foreground">
-            Chanting mantra
-          </p>
+        <div className="mt-6 space-y-2">
           <h1 className="text-3xl font-medium tracking-tight text-foreground">
             {mantra.title}
           </h1>
         </div>
 
-        <div className="mt-8 w-full max-w-xs rounded-2xl bg-card px-5 py-5">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm leading-5 text-muted-foreground">
-                Current
-              </p>
-              <p className="text-2xl font-medium tracking-tight text-foreground">
+        <div className="mt-8 flex items-center justify-center">
+          <div className="relative flex size-52 items-center justify-center">
+            <svg
+              viewBox="0 0 180 180"
+              className="-rotate-90 size-full"
+              aria-hidden
+            >
+              <circle
+                cx="90"
+                cy="90"
+                r={circleRadius}
+                className="fill-none stroke-border"
+                strokeWidth="10"
+              />
+              <circle
+                cx="90"
+                cy="90"
+                r={circleRadius}
+                className="fill-none stroke-primary transition-[stroke-dashoffset]"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeOffset}
+              />
+            </svg>
+
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <p className="text-5xl font-medium tracking-tight text-foreground">
                 {isInfinite ? "∞" : currentLoop}
               </p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm leading-5 text-muted-foreground">
-                Total
-              </p>
-              <p className="text-2xl font-medium tracking-tight text-foreground">
-                {isInfinite ? "∞" : totalLoops}
+              <p className="mt-2 text-sm leading-5 text-muted-foreground">
+                {isInfinite ? "Infinite" : `of ${totalLoops}`}
               </p>
             </div>
           </div>
-
-          {isInfinite ? (
-            <p className="mt-4 text-sm leading-5 text-muted-foreground">
-              Playing until you stop.
-            </p>
-          ) : (
-            <div className="mt-4 space-y-2">
-              <div className="h-2 rounded-full bg-secondary">
-                <div
-                  className="h-full rounded-full bg-primary transition-[width]"
-                  style={{ width: `${progress * 100}%` }}
-                />
-              </div>
-              <p className="text-sm leading-5 text-muted-foreground">
-                {currentLoop} of {totalLoops} chants completed
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <span
-            className={cn(
-              "size-2.5 rounded-full",
-              isPlaying ? "bg-primary" : "bg-muted-foreground/30",
-            )}
-            aria-hidden
-          />
-          {isPlaying ? "Playing" : "Stopped"}
         </div>
       </div>
 
       <Button
         size="lg"
-        variant="secondary"
         className="h-12 w-full rounded-full text-sm shadow-none"
         onClick={() => {
           audioRef.current?.pause();
@@ -1717,7 +1930,7 @@ function ChooseRingtoneScreen({
       return;
     }
 
-    void selectedPreview.play();
+    void selectedPreview.restart();
   }, [selectedTrack.id]);
 
   useEffect(() => {
@@ -1754,12 +1967,12 @@ function ChooseRingtoneScreen({
                   variant="ghost"
                   size="sm"
                   onClick={() => onChangeFilter(filter)}
-                  className={cn(
-                    "h-8 rounded-full px-3 text-xs font-medium shadow-none",
-                    activeFilter === filter
-                      ? "bg-secondary text-foreground hover:bg-secondary"
-                      : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
-                  )}
+                    className={cn(
+                      "h-8 rounded-full px-3 text-xs font-medium shadow-none",
+                      activeFilter === filter
+                        ? "bg-secondary text-foreground hover:bg-secondary"
+                        : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
+                    )}
                 >
                   {filter}
                 </Button>
@@ -1768,7 +1981,7 @@ function ChooseRingtoneScreen({
           </div>
         </section>
 
-        <ScrollArea className="min-h-0 flex-1">
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="divide-y divide-border/80">
             {filteredTracks.map((track) => (
               <RingtoneTrackRow
@@ -1795,7 +2008,7 @@ function ChooseRingtoneScreen({
               />
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       <Button
@@ -1879,15 +2092,15 @@ function ChooseWallpaperScreen({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => onChangeFilter(filter)}
-                    className={cn(
-                      "h-8 rounded-full px-3 text-xs font-medium shadow-none",
-                      activeFilter === filter
-                        ? "bg-secondary text-foreground hover:bg-secondary"
-                        : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
-                    )}
-                  >
-                    {filter}
+                  onClick={() => onChangeFilter(filter)}
+                      className={cn(
+                        "h-8 rounded-full px-3 text-xs font-medium shadow-none",
+                        activeFilter === filter
+                          ? "bg-secondary text-foreground hover:bg-secondary"
+                          : "bg-transparent text-muted-foreground hover:bg-secondary/70 hover:text-foreground",
+                      )}
+                >
+                  {filter}
                   </Button>
                 ))}
               </div>
@@ -1907,7 +2120,7 @@ function ChooseWallpaperScreen({
                     "relative mr-3 aspect-[9/16] w-[calc(100vw-3.25rem)] max-w-[320px] shrink-0 snap-center snap-always overflow-hidden rounded-[1.75rem] border text-left outline-none transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 last:mr-0",
                     selected
                       ? "border-primary ring-2 ring-primary/25"
-                      : "border-border bg-secondary opacity-85",
+                      : "border-border bg-secondary",
                   )}
                 >
                   <img
@@ -1916,15 +2129,6 @@ function ChooseWallpaperScreen({
                     className="h-full w-full object-cover"
                     loading="eager"
                     decoding="async"
-                  />
-                  <span
-                    className={cn(
-                      "absolute inset-0 rounded-[1.75rem] transition-colors",
-                      selected
-                        ? "bg-transparent"
-                        : "bg-background/8",
-                    )}
-                    aria-hidden
                   />
                   <span
                     className={cn(
