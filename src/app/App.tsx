@@ -131,6 +131,17 @@ const featureTiles: Array<{
 ];
 const homeFeatureTileClass =
   "h-14 justify-start rounded-xl border border-border bg-card px-3 text-sm font-medium shadow-none";
+const screenNavTitleClass =
+  "text-center text-base font-medium leading-6 tracking-tight";
+const sectionLabelClass = "text-sm font-medium leading-5 text-foreground";
+const metaLabelClass = "text-xs font-medium leading-5 text-muted-foreground";
+const rowTitleClass =
+  "text-base font-medium leading-6 tracking-tight text-foreground";
+const supportingTextClass = "text-sm leading-5 text-muted-foreground";
+const dialogTitleClass =
+  "text-2xl font-medium leading-8 tracking-tight text-foreground";
+const dialogDescriptionClass =
+  "mx-auto mt-3 max-w-[16.5rem] text-base leading-6 text-muted-foreground";
 
 const repeatDays = [
   { label: "Sun", shortLabel: "S" },
@@ -1173,7 +1184,7 @@ function HomeScreen({
     >
       <header className="flex items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs leading-5 text-muted-foreground">
+          <p className={supportingTextClass}>
             Welcome
           </p>
           <h1 className="text-xl font-medium leading-7 tracking-tight">
@@ -1310,7 +1321,7 @@ function HomeScreen({
               <div className="space-y-4 pt-3">
                 <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
                   <CardContent className="space-y-3 px-4 py-4">
-                    <p className="text-xs font-medium leading-5 text-muted-foreground">
+                    <p className={metaLabelClass}>
                       Mantra
                     </p>
                     <div className="flex w-full items-center gap-3">
@@ -1326,10 +1337,10 @@ function HomeScreen({
                       </Button>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+                        <p className={cn("truncate", rowTitleClass)}>
                           {savedChantMantra.title}
                         </p>
-                        <p className="text-sm leading-5 text-muted-foreground">
+                        <p className={supportingTextClass}>
                           {savedChantCount === "infinite"
                             ? "Infinite chant"
                             : `${savedChantCount} chants`}
@@ -1354,7 +1365,7 @@ function HomeScreen({
               <div className="space-y-4 pt-3">
                 <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
                   <CardContent className="space-y-3 px-4 py-4">
-                    <p className="text-xs font-medium leading-5 text-muted-foreground">
+                    <p className={metaLabelClass}>
                       Ringtone
                     </p>
                     <div className="flex w-full items-center gap-3">
@@ -1387,7 +1398,7 @@ function HomeScreen({
                       </span>
 
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+                        <p className={cn("truncate", rowTitleClass)}>
                           {savedRingtone.title}
                         </p>
                       </div>
@@ -1411,7 +1422,7 @@ function HomeScreen({
                 {hasSharedWallpaper && lockWallpaper ? (
                   <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
                     <CardContent className="space-y-3 px-4 py-4">
-                      <p className="text-xs font-medium leading-5 text-muted-foreground">
+                      <p className={metaLabelClass}>
                         Wallpaper
                       </p>
 
@@ -1429,10 +1440,10 @@ function HomeScreen({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+                          <p className={cn("truncate", rowTitleClass)}>
                             {lockWallpaper.title}
                           </p>
-                          <p className="text-sm leading-5 text-muted-foreground">
+                          <p className={supportingTextClass}>
                             Home &amp; Lock Screen
                           </p>
                         </div>
@@ -1521,7 +1532,7 @@ function HomeScreen({
                         ? "Daily Wallpaper"
                         : "Daily Alarm"}
                   </h2>
-                  <p className="mx-auto max-w-[240px] text-sm leading-5 text-muted-foreground">
+                  <p className={cn("mx-auto max-w-[240px]", supportingTextClass)}>
                     {isRingtoneFeature
                       ? "Choose a ringtone that plays with your alarm every morning."
                       : isMantraFeature
@@ -1578,7 +1589,7 @@ function HomeScreen({
       <Drawer open={hiddenScreenMenuOpen} onOpenChange={setHiddenScreenMenuOpen}>
         <DrawerContent className="rounded-t-3xl border-border bg-background px-1 [&>div:first-child]:mt-3 [&>div:first-child]:h-1 [&>div:first-child]:w-10 [&>div:first-child]:bg-border">
           <DrawerHeader className="px-4 pb-2 pt-5 text-left">
-            <DrawerTitle className="text-base font-medium">
+            <DrawerTitle className="text-base font-medium leading-6 tracking-tight">
               Preview Screens
             </DrawerTitle>
             <DrawerDescription>
@@ -1598,10 +1609,10 @@ function HomeScreen({
                 className="flex w-full items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-4 text-left outline-none transition-colors hover:bg-accent/30 focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium leading-5 text-foreground">
+                  <p className={sectionLabelClass}>
                     {option.title}
                   </p>
-                  <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                  <p className={cn("mt-1", supportingTextClass)}>
                     {option.description}
                   </p>
                 </div>
@@ -1640,7 +1651,7 @@ function ChooseGodOnboardingScreen({
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Choose God To Listen To
         </h1>
       </header>
@@ -1808,8 +1819,8 @@ function NotificationPermissionModalScreen({
             <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Ramji Bhajan</p>
-                  <p className="text-sm text-muted-foreground">Every day · 6:30 AM</p>
+                  <p className={sectionLabelClass}>Ramji Bhajan</p>
+                  <p className={supportingTextClass}>Every day · 6:30 AM</p>
                 </div>
                 <div className="h-7 w-12 rounded-full bg-[#f3d8a8]" />
               </div>
@@ -1817,8 +1828,8 @@ function NotificationPermissionModalScreen({
             <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium text-foreground">Morning Mantra</p>
-                  <p className="text-sm text-muted-foreground">Weekdays · 7:00 AM</p>
+                  <p className={sectionLabelClass}>Morning Mantra</p>
+                  <p className={supportingTextClass}>Weekdays · 7:00 AM</p>
                 </div>
                 <div className="h-7 w-12 rounded-full bg-white" />
               </div>
@@ -1838,10 +1849,10 @@ function NotificationPermissionModalScreen({
             </div>
 
             <div className="mt-5">
-              <DialogTitle className="text-[1.9rem] font-medium leading-9 tracking-tight text-foreground">
+              <DialogTitle className={dialogTitleClass}>
                 Please allow notification permission
               </DialogTitle>
-              <DialogDescription className="mx-auto mt-3 max-w-[16rem] text-base leading-6 text-muted-foreground">
+              <DialogDescription className={cn("max-w-[16rem]", dialogDescriptionClass)}>
                 Allow notifications so your alarm can ring and remind you.
               </DialogDescription>
             </div>
@@ -1850,13 +1861,13 @@ function NotificationPermissionModalScreen({
               <button
                 type="button"
                 onClick={onNotNow}
-                className="h-12 rounded-full text-base font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="h-12 rounded-full text-sm font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 Not now
               </button>
               <Button
                 size="lg"
-                className="h-12 rounded-full px-6 text-base shadow-none"
+                className="h-12 rounded-full px-6 text-sm shadow-none"
                 onClick={onOpenSettings}
               >
                 Open settings
@@ -1896,8 +1907,8 @@ function RingtoneSettingsPermissionModalScreen({
           <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-foreground">Temple Bells</p>
-                <p className="text-sm text-muted-foreground">Selected ringtone</p>
+                  <p className={sectionLabelClass}>Temple Bells</p>
+                  <p className={supportingTextClass}>Selected ringtone</p>
               </div>
               <Button
                 type="button"
@@ -1913,8 +1924,8 @@ function RingtoneSettingsPermissionModalScreen({
           <div className="rounded-[1.75rem] border border-[rgba(207,190,165,0.6)] bg-white/50 p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-foreground">Apply as alarm sound</p>
-                <p className="text-sm text-muted-foreground">
+                <p className={sectionLabelClass}>Apply as alarm sound</p>
+                <p className={supportingTextClass}>
                   Needs system settings access
                 </p>
               </div>
@@ -1935,10 +1946,10 @@ function RingtoneSettingsPermissionModalScreen({
             </div>
 
             <div className="mt-5">
-              <DialogTitle className="text-[1.75rem] font-medium leading-8 tracking-tight text-foreground">
+              <DialogTitle className={dialogTitleClass}>
                 Please allow ringtone permission
               </DialogTitle>
-              <DialogDescription className="mx-auto mt-3 max-w-[16.5rem] text-base leading-6 text-muted-foreground">
+              <DialogDescription className={dialogDescriptionClass}>
                 To set a ringtone, allow this app to change system settings in your phone settings.
               </DialogDescription>
             </div>
@@ -1947,13 +1958,13 @@ function RingtoneSettingsPermissionModalScreen({
               <button
                 type="button"
                 onClick={onNotNow}
-                className="h-12 rounded-full text-base font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="h-12 rounded-full text-sm font-medium text-primary outline-none transition-colors hover:text-primary/85 focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 Not now
               </button>
               <Button
                 size="lg"
-                className="h-12 rounded-full px-6 text-base shadow-none"
+                className="h-12 rounded-full px-6 text-sm shadow-none"
                 onClick={onOpenSettings}
               >
                 Open settings
@@ -1979,15 +1990,15 @@ function BhaktiVideosScreen({ onBack }: { onBack: () => void }) {
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Bhakti Videos
         </h1>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 pt-5">
         <div className="space-y-1">
-          <p className="text-sm font-medium leading-5">Categories</p>
-          <p className="text-sm leading-5 text-muted-foreground">
+          <p className={sectionLabelClass}>Categories</p>
+          <p className={supportingTextClass}>
             Explore devotional video learning by topic.
           </p>
         </div>
@@ -2001,10 +2012,10 @@ function BhaktiVideosScreen({ onBack }: { onBack: () => void }) {
               >
                 <CardContent className="flex items-center justify-between gap-4 px-4 py-4">
                   <div className="min-w-0">
-                    <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+                    <p className={cn("truncate", rowTitleClass)}>
                       {category.title}
                     </p>
-                    <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                    <p className={cn("mt-1", supportingTextClass)}>
                       {category.subtitle}
                     </p>
                   </div>
@@ -2069,14 +2080,14 @@ function AlarmScreen({
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Set Alarm
         </h1>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-6 pt-5">
         <section>
-          <p className="mb-3 text-sm font-medium leading-5">Time</p>
+          <p className={cn("mb-3", sectionLabelClass)}>Time</p>
           <div className="relative grid grid-cols-[1fr_1fr_0.78fr] overflow-hidden rounded-xl bg-secondary p-2 text-center">
             <div className="pointer-events-none absolute inset-x-2 top-1/2 h-10 -translate-y-1/2 rounded-md bg-card" />
             <WheelPicker
@@ -2101,9 +2112,9 @@ function AlarmScreen({
         <section className="space-y-3.5 pt-2">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium leading-5">Repeat</p>
+              <p className={sectionLabelClass}>Repeat</p>
             </div>
-            <label className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
+            <label className={cn("flex shrink-0 items-center gap-2", supportingTextClass)}>
               <Switch
                 checked={allDaysSelected}
                 onCheckedChange={onToggleEveryDay}
@@ -2139,7 +2150,7 @@ function AlarmScreen({
         </section>
 
         <section className="space-y-3 pt-2">
-          <p className="text-sm font-medium leading-5">Mantra</p>
+          <p className={sectionLabelClass}>Mantra</p>
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <Button
@@ -2158,7 +2169,7 @@ function AlarmScreen({
               </Button>
 
               <div className="min-w-0">
-                <span className="block truncate text-sm leading-5 text-muted-foreground">
+                <span className={cn("block truncate", rowTitleClass)}>
                   {selectedMantra.title}
                 </span>
               </div>
@@ -2261,7 +2272,7 @@ function ChooseMantraScreen({
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Choose Mantra
         </h1>
       </header>
@@ -2355,7 +2366,7 @@ function MantraCountScreen({
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Mantra Count
         </h1>
       </header>
@@ -2388,7 +2399,7 @@ function MantraCountScreen({
                   <Check className="size-3.5" weight="bold" />
                 </span>
 
-                <span className="block truncate text-sm font-medium leading-5 text-foreground">
+                <span className={cn("block truncate", sectionLabelClass)}>
                   {option.label}
                 </span>
               </button>
@@ -2539,7 +2550,7 @@ function MantraSessionScreen({
                   <p className="text-6xl font-medium tracking-tight text-foreground">
                     {isInfinite ? "∞" : currentLoop}
                   </p>
-                  <p className="mt-2 text-sm leading-5 text-muted-foreground">
+                  <p className={cn("mt-2", supportingTextClass)}>
                     {isInfinite ? "Infinite" : `of ${totalLoops}`}
                   </p>
                 </div>
@@ -2625,7 +2636,7 @@ function ChooseRingtoneScreen({
           <CaretLeft className="size-6" weight="regular" aria-hidden />
           <span className="sr-only">Back</span>
         </Button>
-        <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
+        <h1 className={screenNavTitleClass}>
           Choose Ringtone
         </h1>
       </header>
@@ -2751,9 +2762,9 @@ function ChooseWallpaperScreen({
             <CaretLeft className="size-6" weight="regular" aria-hidden />
             <span className="sr-only">Back</span>
           </Button>
-          <h1 className="text-center text-lg font-medium leading-6 tracking-tight">
-            Choose Wallpaper
-          </h1>
+        <h1 className={screenNavTitleClass}>
+          Choose Wallpaper
+        </h1>
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col gap-4 pt-5">
@@ -2864,7 +2875,7 @@ function ChooseWallpaperScreen({
                   <span className="flex size-10 items-center justify-center rounded-lg bg-secondary text-foreground">
                     <Icon className="size-5" weight="regular" aria-hidden />
                   </span>
-                  <span className="text-sm font-medium leading-5 text-foreground">
+                  <span className={sectionLabelClass}>
                     {option.label}
                   </span>
                 </button>
@@ -2889,7 +2900,7 @@ function WallpaperSummaryCard({
   return (
     <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
       <CardContent className="space-y-3 px-4 py-4">
-        <p className="text-xs font-medium leading-5 text-muted-foreground">
+        <p className={metaLabelClass}>
           {label}
         </p>
 
@@ -2907,7 +2918,7 @@ function WallpaperSummaryCard({
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-medium leading-6 tracking-tight text-foreground">
+            <p className={cn("truncate", rowTitleClass)}>
               {wallpaper.title}
             </p>
           </div>
@@ -2940,13 +2951,13 @@ function WallpaperEmptySlotCard({
   return (
     <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
       <CardContent className="space-y-3 px-4 py-4">
-        <p className="text-xs font-medium leading-5 text-muted-foreground">
+        <p className={metaLabelClass}>
           {label}
         </p>
 
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-base font-medium leading-6 tracking-tight text-foreground">
+            <p className={rowTitleClass}>
               No wallpaper set
             </p>
           </div>
@@ -3002,7 +3013,7 @@ function MantraTrackRow({
       </span>
 
       <div className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium leading-5 text-foreground">
+        <span className={cn("block truncate", sectionLabelClass)}>
           {track.title}
         </span>
       </div>
@@ -3062,7 +3073,7 @@ function RingtoneTrackRow({
       </span>
 
       <div className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium leading-5 text-foreground">
+        <span className={cn("block truncate", sectionLabelClass)}>
           {track.title}
         </span>
       </div>
