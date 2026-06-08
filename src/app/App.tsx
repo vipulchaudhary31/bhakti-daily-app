@@ -13,6 +13,7 @@ import {
   MusicNotes,
   Pause,
   Play,
+  PlayCircle,
   Plus,
   Quotes,
 } from "@phosphor-icons/react";
@@ -128,6 +129,8 @@ const featureTiles: Array<{
     icon: MusicNotes,
   },
 ];
+const homeFeatureTileClass =
+  "h-14 justify-start rounded-xl border border-border bg-card px-3 text-sm font-medium shadow-none";
 
 const repeatDays = [
   { label: "Sun", shortLabel: "S" },
@@ -406,6 +409,20 @@ const bhaktiVideoCategories = [
   {
     title: "Kathas",
     subtitle: "Long-form spiritual listening sessions",
+  },
+];
+const bhaktiVideoHighlights = [
+  {
+    title: "Temple Courtyard Darshan",
+    imageSrc: assetUrl("wallpapers/temple-light.jpg"),
+  },
+  {
+    title: "Saffron Sunrise Aarti",
+    imageSrc: assetUrl("wallpapers/saffron-dawn.jpg"),
+  },
+  {
+    title: "Stillness by the Lake",
+    imageSrc: assetUrl("wallpapers/lake-stillness.jpg"),
   },
 ];
 const onboardingGodOptions: OnboardingGodOption[] = [
@@ -1163,30 +1180,6 @@ function HomeScreen({
             {greeting}
           </h1>
         </div>
-        <div className="mt-0.5 flex shrink-0 items-center gap-1.5 rounded-full border border-[rgba(238,228,214,0.95)] bg-[linear-gradient(180deg,rgba(255,251,246,0.96)_0%,rgba(248,241,231,0.98)_100%)] px-2 py-1 text-[11px] font-medium text-foreground shadow-[0_1px_1px_rgba(15,23,42,0.04)]">
-          <div className="relative h-6 w-8 shrink-0" aria-hidden>
-            {[
-              assetUrl("wallpapers/temple-light.jpg"),
-              assetUrl("wallpapers/saffron-dawn.jpg"),
-              assetUrl("wallpapers/quiet-tree.jpg"),
-            ].map((src, index) => (
-              <span
-                key={src}
-                className="absolute top-1/2 block size-5 -translate-y-1/2 overflow-hidden rounded-full border-[1.5px] border-white shadow-sm"
-                style={{ left: `${index * 8}px`, zIndex: 3 - index }}
-              >
-                <img
-                  src={src}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              </span>
-            ))}
-          </div>
-          <span className="whitespace-nowrap">Bhakti Videos</span>
-          <ArrowUpRight className="size-3 opacity-55" weight="regular" aria-hidden />
-        </div>
       </header>
 
       <section className="mt-6 grid grid-cols-2 gap-3">
@@ -1199,7 +1192,7 @@ function HomeScreen({
               variant="ghost"
               onClick={() => onChangeFeature(tile.label as HomeFeature)}
               className={cn(
-                "h-14 justify-start rounded-xl border border-border bg-card px-3 text-sm font-medium shadow-none",
+                homeFeatureTileClass,
                 activeFeature === tile.label
                   ? "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15"
                   : "text-card-foreground hover:bg-accent/70",
@@ -1212,7 +1205,42 @@ function HomeScreen({
         })}
       </section>
 
-      <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-6">
+      <section className="mt-3">
+        <Button
+          variant="ghost"
+          onClick={onOpenVideosScreen}
+          className={cn(
+            homeFeatureTileClass,
+            "w-full text-card-foreground hover:bg-accent/70",
+          )}
+        >
+          <PlayCircle className="size-5" weight="regular" aria-hidden />
+          <span className="truncate">Bhakti Videos</span>
+
+          <span className="relative ml-auto block h-9 w-[4.75rem] shrink-0" aria-hidden>
+            {bhaktiVideoHighlights.map((video, index) => (
+              <span
+                key={video.title}
+                className="absolute top-1/2 block h-9 w-9 overflow-hidden rounded-md border-2 border-background bg-muted shadow-sm"
+                style={{
+                  right: `${index * 14}px`,
+                  zIndex: bhaktiVideoHighlights.length - index,
+                  transform: `translateY(-50%) rotate(${index === 0 ? "0deg" : index === 1 ? "-7deg" : "-12deg"})`,
+                }}
+              >
+                <img
+                  src={video.imageSrc}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </span>
+            ))}
+          </span>
+        </Button>
+      </section>
+
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-5">
         <div className="min-h-0 flex-1">
           <div className="h-full w-full">
             {isAlarmFeature && alarms.length ? (
@@ -1709,23 +1737,21 @@ function AlarmRingingScreen({
           <div className="size-9" aria-hidden />
         </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center pb-4 pt-6 text-center">
-          <div className="relative mb-6 flex size-40 items-center justify-center rounded-full border border-white/80 bg-white/55 shadow-[0_18px_40px_rgba(163,95,22,0.12)] backdrop-blur-sm">
-            <div className="absolute inset-3 rounded-full border border-[rgba(247,167,66,0.24)]" />
-            <div className="absolute inset-6 rounded-full border border-[rgba(247,167,66,0.18)]" />
-            <BellRinging className="size-14 text-primary" weight="regular" aria-hidden />
+        <div className="flex flex-1 flex-col items-center justify-center pb-12 pt-2 text-center">
+          <div className="relative mb-6 flex size-28 items-center justify-center rounded-full border border-white/80 bg-white/55 shadow-[0_16px_30px_rgba(163,95,22,0.08)] backdrop-blur-sm">
+            <BellRinging className="size-11 text-primary" weight="regular" aria-hidden />
           </div>
 
-          <div className="mt-2 flex items-end gap-2">
-            <span className="text-[4rem] font-medium leading-none tracking-tight">
+          <div className="flex items-end gap-2">
+            <span className="text-[4.6rem] font-medium leading-none tracking-[-0.03em] text-foreground">
               {hour}:{minute}
             </span>
-            <span className="pb-2 text-lg font-medium leading-none text-muted-foreground">
+            <span className="pb-2 text-xl font-medium leading-none text-muted-foreground">
               {period}
             </span>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <p className="text-lg font-medium leading-6 tracking-tight text-foreground">
               {mantra.title}
             </p>
@@ -1738,7 +1764,7 @@ function AlarmRingingScreen({
             className="h-12 w-full rounded-full bg-primary text-primary-foreground shadow-none"
             onClick={onDismiss}
           >
-            Dismiss Alarm
+            Stop
           </Button>
         </div>
       </div>
@@ -2455,84 +2481,88 @@ function MantraSessionScreen({
     : circumference - progress * circumference;
 
   return (
-    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f8f0e4] px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))] md:hidden">
+    <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f8f0e4] md:hidden">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#fff1d6_0%,#ffe0ac_18%,#f8ecdc_42%,#f7efe5_100%)]" />
       <div className="absolute inset-x-0 top-0 h-[42%] bg-[radial-gradient(circle_at_top,rgba(255,122,0,0.34),rgba(255,149,43,0.24)_28%,rgba(255,196,124,0.12)_52%,transparent_74%)]" />
       <div className="absolute left-1/2 top-[16%] size-[22rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,111,0,0.24)_0%,rgba(255,163,72,0.14)_38%,rgba(255,210,159,0.04)_68%,transparent_78%)] blur-2xl" />
 
-      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-start pt-8 text-center">
-        <div className="flex size-24 items-center justify-center rounded-full bg-[rgba(255,255,255,0.78)] text-primary shadow-[0_18px_44px_rgba(255,120,20,0.18)] backdrop-blur-sm">
-          <Quotes className="size-9" weight="regular" aria-hidden />
-        </div>
+      <div className="relative flex h-full flex-col px-5 pt-[max(1.5rem,env(safe-area-inset-top))]">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pb-6 text-center">
+          <div className="flex size-24 items-center justify-center rounded-full bg-[rgba(255,255,255,0.78)] text-primary shadow-[0_18px_44px_rgba(255,120,20,0.18)] backdrop-blur-sm">
+            <Quotes className="size-9" weight="regular" aria-hidden />
+          </div>
 
-        <div className="mt-6 space-y-2">
-          <h1 className="text-3xl font-medium tracking-tight text-foreground">
-            {mantra.title}
-          </h1>
-        </div>
+          <div className="mt-6 max-w-[18rem] space-y-2">
+            <h1 className="text-[2rem] font-medium leading-[1.1] tracking-tight text-foreground">
+              {mantra.title}
+            </h1>
+          </div>
 
-        <div className="mt-8 flex items-center justify-center">
-          <div className="relative flex size-56 items-center justify-center">
-            <div className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.64)_0%,rgba(255,255,255,0.28)_56%,transparent_74%)] blur-sm" />
-            <svg
-              viewBox="0 0 180 180"
-              className="-rotate-90 size-full drop-shadow-[0_10px_26px_rgba(255,120,20,0.16)]"
-              aria-hidden
-            >
-              <circle
-                cx="90"
-                cy="90"
-                r={circleRadius}
-                className="fill-none"
-                stroke="rgba(138,96,43,0.12)"
-                strokeWidth="10"
-              />
-              <circle
-                cx="90"
-                cy="90"
-                r={circleRadius}
-                className="fill-none transition-[stroke-dashoffset]"
-                stroke="url(#mantraProgressGradient)"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeOffset}
-              />
-              <defs>
-                <linearGradient id="mantraProgressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#ff8a1f" />
-                  <stop offset="55%" stopColor="#ff6b00" />
-                  <stop offset="100%" stopColor="#ffb14d" />
-                </linearGradient>
-              </defs>
-            </svg>
+          <div className="mt-10 flex items-center justify-center">
+            <div className="relative flex size-52 items-center justify-center">
+              <div className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.64)_0%,rgba(255,255,255,0.28)_56%,transparent_74%)] blur-sm" />
+              <svg
+                viewBox="0 0 180 180"
+                className="-rotate-90 size-full drop-shadow-[0_10px_26px_rgba(255,120,20,0.16)]"
+                aria-hidden
+              >
+                <circle
+                  cx="90"
+                  cy="90"
+                  r={circleRadius}
+                  className="fill-none"
+                  stroke="rgba(138,96,43,0.12)"
+                  strokeWidth="10"
+                />
+                <circle
+                  cx="90"
+                  cy="90"
+                  r={circleRadius}
+                  className="fill-none transition-[stroke-dashoffset]"
+                  stroke="url(#mantraProgressGradient)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeOffset}
+                />
+                <defs>
+                  <linearGradient id="mantraProgressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#ff8a1f" />
+                    <stop offset="55%" stopColor="#ff6b00" />
+                    <stop offset="100%" stopColor="#ffb14d" />
+                  </linearGradient>
+                </defs>
+              </svg>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="flex size-[10.9rem] flex-col items-center justify-center rounded-full bg-[rgba(255,255,255,0.9)] shadow-[0_8px_20px_rgba(112,76,23,0.04)] backdrop-blur-sm">
-                <p className="text-6xl font-medium tracking-tight text-foreground">
-                  {isInfinite ? "∞" : currentLoop}
-                </p>
-                <p className="mt-2 text-sm leading-5 text-muted-foreground">
-                  {isInfinite ? "Infinite" : `of ${totalLoops}`}
-                </p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="flex size-[10rem] flex-col items-center justify-center rounded-full bg-[rgba(255,255,255,0.9)] shadow-[0_8px_20px_rgba(112,76,23,0.04)] backdrop-blur-sm">
+                  <p className="text-6xl font-medium tracking-tight text-foreground">
+                    {isInfinite ? "∞" : currentLoop}
+                  </p>
+                  <p className="mt-2 text-sm leading-5 text-muted-foreground">
+                    {isInfinite ? "Infinite" : `of ${totalLoops}`}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Button
-        size="lg"
-        className="mt-6 h-11 w-full shrink-0 rounded-xl bg-primary text-primary-foreground text-sm shadow-none hover:bg-primary/90"
-        onClick={() => {
-          audioRef.current?.pause();
-          audioRef.current && (audioRef.current.currentTime = 0);
-          setIsPlaying(false);
-          onStop();
-        }}
-      >
-        Stop Mantra
-      </Button>
+        <div className="-mx-5 mt-auto bg-gradient-to-t from-background/95 via-background/80 to-transparent px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-4">
+          <Button
+            size="lg"
+            className="h-11 w-full rounded-xl bg-primary text-primary-foreground text-sm shadow-none"
+            onClick={() => {
+              audioRef.current?.pause();
+              audioRef.current && (audioRef.current.currentTime = 0);
+              setIsPlaying(false);
+              onStop();
+            }}
+          >
+            Stop Mantra
+          </Button>
+        </div>
+      </div>
     </section>
   );
 }
