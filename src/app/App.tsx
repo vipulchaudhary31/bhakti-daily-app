@@ -886,7 +886,7 @@ function App() {
 
   const handleSaveWallpaper = (placement: WallpaperPlacement) => {
     if (!selectedWallpaperId) return;
-    const nextPlacement = wallpaperEditorTarget ?? placement;
+    const nextPlacement = placement;
 
     if (nextPlacement === "lock") {
       setLockWallpaperId(selectedWallpaperId);
@@ -2732,22 +2732,15 @@ function ChooseWallpaperScreen({
       ? wallpapers
       : wallpapers.filter((wallpaper) => wallpaper.category === activeFilter);
   const hasSelection = selectedWallpaperId !== null;
-  const placementOptions =
-    editorTarget === "lock"
-      ? [
-          { value: "lock", label: "Lock Screen", icon: Lock },
-          { value: "both", label: "Set as Both", icon: Copy },
-        ]
-      : editorTarget === "home"
-        ? [
-            { value: "home", label: "Home Screen", icon: House },
-            { value: "both", label: "Set as Both", icon: Copy },
-          ]
-        : [
-            { value: "lock", label: "Lock Screen", icon: Lock },
-            { value: "home", label: "Home Screen", icon: House },
-            { value: "both", label: "Set as Both", icon: Copy },
-          ];
+  const placementOptions = [
+    { value: "lock", label: "Lock Screen", icon: Lock },
+    { value: "home", label: "Home Screen", icon: House },
+    { value: "both", label: "Set as Both", icon: Copy },
+  ] satisfies Array<{
+    value: WallpaperPlacement;
+    label: string;
+    icon: Icon;
+  }>;
 
   return (
     <>
@@ -2854,10 +2847,7 @@ function ChooseWallpaperScreen({
           </DrawerHeader>
 
           <div
-            className={cn(
-              "gap-3 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]",
-              placementOptions.length === 2 ? "grid grid-cols-2" : "grid grid-cols-3",
-            )}
+            className="grid grid-cols-3 gap-3 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
           >
             {placementOptions.map((option) => {
               const Icon = option.icon;
