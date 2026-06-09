@@ -53,6 +53,7 @@ type Screen =
   | "alarm-ringing"
   | "notification-permission-modal"
   | "ringtone-settings-permission-modal"
+  | "subscription-expired"
   | "alarm-mantra"
   | "ringtone"
   | "videos"
@@ -161,6 +162,9 @@ const minuteValues = Array.from({ length: 60 }, (_, index) =>
 );
 const periodValues = ["AM", "PM"];
 const wheelItemHeight = 40;
+const wheelVisibleRows = 5;
+const wheelViewportHeight = wheelItemHeight * wheelVisibleRows;
+const wheelViewportPadding = (wheelViewportHeight - wheelItemHeight) / 2;
 const wheelCycleCount = 21;
 const wheelCenterCycle = Math.floor(wheelCycleCount / 2);
 const mantraFilters = [
@@ -511,6 +515,11 @@ const hiddenScreenOptions: Array<{
     title: "Ringtone Permission Modal",
     description: "Standalone system settings permission modal preview",
   },
+  {
+    screen: "subscription-expired",
+    title: "Subscription Expired",
+    description: "Standalone expiry gate before paywall",
+  },
 ];
 const mantraCountOptions: Array<{
   value: MantraCountOption;
@@ -667,6 +676,7 @@ function App() {
       initialScreenParam === "alarm-ringing" ||
       initialScreenParam === "notification-permission-modal" ||
       initialScreenParam === "ringtone-settings-permission-modal" ||
+      initialScreenParam === "subscription-expired" ||
       initialScreenParam === "alarm-mantra" ||
       initialScreenParam === "ringtone" ||
       initialScreenParam === "videos" ||
@@ -688,6 +698,7 @@ function App() {
           nextScreen === "alarm-ringing" ||
           nextScreen === "notification-permission-modal" ||
           nextScreen === "ringtone-settings-permission-modal" ||
+          nextScreen === "subscription-expired" ||
           nextScreen === "alarm-mantra" ||
           nextScreen === "ringtone" ||
           nextScreen === "videos" ||
@@ -932,7 +943,6 @@ function App() {
           onOpenChantingMantraScreen={openChantingMantraScreen}
           onOpenSavedMantraSession={openSavedMantraSession}
           onOpenRingtoneScreen={openRingtoneScreen}
-          onOpenVideosScreen={openVideosScreen}
           onOpenStandaloneScreen={openStandaloneScreen}
           onOpenWallpaperScreen={openWallpaperScreen}
           onOpenWallpaperScreenForTarget={openWallpaperScreenForTarget}
@@ -993,6 +1003,21 @@ function App() {
           onOpenSettings={() => {
             window.history.pushState({ screen: "home" }, "", window.location.href);
             setScreen("home");
+          }}
+        />
+      ) : screen === "subscription-expired" ? (
+        <SubscriptionExpiredScreen
+          activeFeature={activeHomeFeature}
+          alarms={savedAlarms}
+          greeting="Jai Shree Ram"
+          homeWallpaper={homeWallpaper}
+          lockWallpaper={lockWallpaper}
+          savedChantCount={savedChantCount}
+          savedChantMantra={savedChantMantra}
+          savedRingtone={savedRingtone}
+          onChangeFeature={setActiveHomeFeature}
+          onUpgrade={() => {
+            toast.success("Paywall preview opened.");
           }}
         />
       ) : (
@@ -1098,7 +1123,6 @@ function HomeScreen({
   onOpenChantingMantraScreen,
   onOpenSavedMantraSession,
   onOpenRingtoneScreen,
-  onOpenVideosScreen,
   onOpenStandaloneScreen,
   onOpenWallpaperScreen,
   onOpenWallpaperScreenForTarget,
@@ -1118,7 +1142,6 @@ function HomeScreen({
   onOpenChantingMantraScreen: () => void;
   onOpenSavedMantraSession: () => void;
   onOpenRingtoneScreen: () => void;
-  onOpenVideosScreen: () => void;
   onOpenStandaloneScreen: (screen: Screen) => void;
   onOpenWallpaperScreen: () => void;
   onOpenWallpaperScreenForTarget: (target: WallpaperPlacement) => void;
@@ -1217,12 +1240,10 @@ function HomeScreen({
       </section>
 
       <section className="mt-3">
-        <Button
-          variant="ghost"
-          onClick={onOpenVideosScreen}
+        <div
           className={cn(
             homeFeatureTileClass,
-            "w-full text-card-foreground hover:bg-accent/70",
+            "flex w-full items-center text-card-foreground",
           )}
         >
           <PlayCircle className="size-5" weight="regular" aria-hidden />
@@ -1248,7 +1269,7 @@ function HomeScreen({
               </span>
             ))}
           </span>
-        </Button>
+        </div>
       </section>
 
       <section className="flex min-h-0 flex-1 flex-col overflow-hidden pt-5">
@@ -1622,6 +1643,343 @@ function HomeScreen({
           </div>
         </DrawerContent>
       </Drawer>
+    </section>
+  );
+}
+
+function SubscriptionExpiredScreen({
+  activeFeature,
+  alarms,
+  greeting,
+  homeWallpaper,
+  lockWallpaper,
+  savedChantCount,
+  savedChantMantra,
+  savedRingtone,
+  onChangeFeature,
+  onUpgrade,
+}: {
+  activeFeature: HomeFeature;
+  alarms: SavedAlarm[];
+  greeting: string;
+  homeWallpaper: WallpaperOption | null;
+  lockWallpaper: WallpaperOption | null;
+  savedChantCount: MantraCountOption;
+  savedChantMantra: MantraTrack | null;
+  savedRingtone: RingtoneTrack | null;
+  onChangeFeature: (feature: HomeFeature) => void;
+  onUpgrade: () => void;
+}) {
+  const isAlarmFeature = activeFeature === "Alarm";
+  const isMantraFeature = activeFeature === "Mantra";
+  const isRingtoneFeature = activeFeature === "Ringtone";
+  const isWallpaperFeature = activeFeature === "Wallpaper";
+  const previewAlarms =
+    alarms.length > 0
+      ? alarms
+      : [
+          {
+            id: "expired-preview-alarm",
+            hour: "01",
+            minute: "00",
+            period: "PM",
+            repeatDays: ["Wed"],
+            enabled: true,
+            mantraId: "ramji-bhajan",
+          },
+        ];
+  const previewChantMantra = savedChantMantra ?? mantraTracks[0] ?? null;
+  const previewChantCount = savedChantMantra ? savedChantCount : "11";
+  const previewRingtone = savedRingtone ?? ringtoneTracks[0] ?? null;
+  const previewLockWallpaper = lockWallpaper ?? wallpaperOptions[1] ?? wallpaperOptions[0] ?? null;
+  const previewHomeWallpaper = homeWallpaper ?? wallpaperOptions[4] ?? wallpaperOptions[0] ?? null;
+  const hasSharedWallpaper =
+    Boolean(previewLockWallpaper && previewHomeWallpaper) &&
+    previewLockWallpaper?.id === previewHomeWallpaper?.id;
+
+  return (
+    <section className="mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-5 md:hidden">
+      <header className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className={supportingTextClass}>Welcome</p>
+          <h1 className="text-xl font-medium leading-7 tracking-tight">
+            {greeting}
+          </h1>
+        </div>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden pt-4">
+        <section className="rounded-[1.75rem] border border-[#f0b6ae] bg-[linear-gradient(180deg,rgba(255,239,236,0.96)_0%,rgba(255,247,245,0.99)_100%)] px-4 py-5 shadow-[0_12px_28px_rgba(190,72,58,0.12)]">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#fbe0db] text-[#cf5a49]">
+              <Lock className="size-5" weight="regular" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="text-lg font-medium leading-6 tracking-tight text-foreground">
+                Subscription expired
+              </p>
+              <p className={cn("mt-1", supportingTextClass)}>
+                Renew now to restart alarms, resume chants, and apply wallpapers and ringtones again.
+              </p>
+              <Button
+                type="button"
+                size="sm"
+                className="mt-3 h-9 rounded-lg bg-[#cf5a49] px-4 text-sm text-white shadow-none hover:bg-[#bb4f40]"
+                onClick={onUpgrade}
+              >
+                Renew now
+                <ArrowUpRight className="size-4" weight="bold" aria-hidden />
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-4 grid grid-cols-2 gap-3">
+          {featureTiles.map((tile) => {
+            const Icon = tile.icon;
+
+            return (
+              <Button
+                key={tile.label}
+                variant="ghost"
+                onClick={() => onChangeFeature(tile.label as HomeFeature)}
+                className={cn(
+                  homeFeatureTileClass,
+                  activeFeature === tile.label
+                    ? "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15"
+                    : "text-card-foreground hover:bg-accent/70",
+                )}
+              >
+                <Icon className="size-5" weight="regular" aria-hidden />
+                <span>{tile.label}</span>
+              </Button>
+            );
+          })}
+        </section>
+
+        <section className="mt-3">
+          <div
+            className={cn(
+              homeFeatureTileClass,
+              "flex w-full items-center text-card-foreground",
+            )}
+          >
+            <PlayCircle className="size-5" weight="regular" aria-hidden />
+            <span className="truncate">Bhakti Videos</span>
+
+            <span className="relative ml-auto block h-9 w-[4.75rem] shrink-0" aria-hidden>
+              {bhaktiVideoHighlights.map((video, index) => (
+                <span
+                  key={video.title}
+                  className="absolute top-1/2 block h-9 w-9 overflow-hidden rounded-md border-2 border-background bg-muted shadow-sm"
+                  style={{
+                    right: `${index * 14}px`,
+                    zIndex: bhaktiVideoHighlights.length - index,
+                    transform: `translateY(-50%) rotate(${index === 0 ? "0deg" : index === 1 ? "-7deg" : "-12deg"})`,
+                  }}
+                >
+                  <img
+                    src={video.imageSrc}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </span>
+              ))}
+            </span>
+          </div>
+        </section>
+
+        <section className="min-h-0 flex-1 overflow-y-auto pb-4 pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="space-y-3">
+            {isAlarmFeature ? (
+              previewAlarms.length > 0 ? (
+                previewAlarms.map((alarm) => (
+                  <Card
+                    key={alarm.id}
+                    className="gap-0 rounded-2xl border-border bg-card py-0 shadow-none"
+                  >
+                    <CardContent className="space-y-4 px-4 py-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <CardTitle className="text-3xl font-medium tracking-tight">
+                          {alarm.hour}:{alarm.minute} {alarm.period}
+                        </CardTitle>
+                        <div
+                          onClick={(event) => event.stopPropagation()}
+                          onKeyDown={(event) => event.stopPropagation()}
+                        >
+                          <Switch
+                            size="lg"
+                            checked={alarm.enabled}
+                            onCheckedChange={() => {}}
+                            aria-label="Alarm unchanged until subscription resumes"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {repeatDays.map((day) => {
+                          const selected = alarm.repeatDays.includes(day.label);
+
+                          return (
+                            <span
+                              key={day.label}
+                              className={cn(
+                                "flex size-8 items-center justify-center rounded-full text-xs font-medium",
+                                selected
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-secondary text-muted-foreground",
+                              )}
+                            >
+                              {day.shortLabel}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : null
+            ) : isMantraFeature && previewChantMantra ? (
+              <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
+                <CardContent className="space-y-3 px-4 py-4">
+                  <p className={metaLabelClass}>
+                    Mantra
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon-sm"
+                      className="shrink-0 rounded-full"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                      aria-label="Mantra preview unavailable until subscription resumes"
+                    >
+                      <Play className="size-4" weight="fill" aria-hidden />
+                    </Button>
+
+                    <div className="min-w-0 flex-1">
+                      <p className={cn("truncate", rowTitleClass)}>{previewChantMantra.title}</p>
+                      <p className={supportingTextClass}>
+                        {previewChantCount === "infinite" ? "Infinite chant" : `${previewChantCount} chants`}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="shrink-0 rounded-lg px-2.5 text-primary"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      Change
+                      <CaretRight className="size-4" aria-hidden />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : isRingtoneFeature && previewRingtone ? (
+              <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
+                <CardContent className="space-y-3 px-4 py-4">
+                  <p className={metaLabelClass}>
+                    Ringtone
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="icon-sm"
+                      className="shrink-0 rounded-full"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                      aria-label="Ringtone preview unavailable until subscription resumes"
+                    >
+                      <Play className="size-4" weight="fill" aria-hidden />
+                    </Button>
+
+                    <div className="min-w-0 flex-1">
+                      <p className={cn("truncate", rowTitleClass)}>{previewRingtone.title}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="shrink-0 rounded-lg px-2.5 text-primary"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    >
+                      Change
+                      <CaretRight className="size-4" aria-hidden />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : isWallpaperFeature ? (
+              hasSharedWallpaper && previewLockWallpaper ? (
+                <Card className="rounded-2xl border-border bg-card py-0 shadow-none">
+                  <CardContent className="space-y-3 px-4 py-4">
+                    <p className={metaLabelClass}>Wallpaper</p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-16 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary">
+                        <img
+                          src={previewLockWallpaper.imageSrc}
+                          alt=""
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={cn("truncate", rowTitleClass)}>{previewLockWallpaper.title}</p>
+                        <p className={supportingTextClass}>Home &amp; Lock Screen</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="shrink-0 rounded-lg px-2.5 text-primary opacity-70"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                      >
+                        Change
+                        <CaretRight className="size-4" aria-hidden />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {previewLockWallpaper ? (
+                    <WallpaperSummaryCard
+                      label="Lock Screen"
+                      wallpaper={previewLockWallpaper}
+                      onChange={onUpgrade}
+                    />
+                  ) : null}
+                  {previewHomeWallpaper ? (
+                    <WallpaperSummaryCard
+                      label="Home Screen"
+                      wallpaper={previewHomeWallpaper}
+                      onChange={onUpgrade}
+                    />
+                  ) : null}
+                </div>
+              )
+            ) : null}
+          </div>
+        </section>
+      </div>
+
     </section>
   );
 }
@@ -2088,8 +2446,10 @@ function AlarmScreen({
       <div className="flex min-h-0 flex-1 flex-col gap-6 pt-5">
         <section>
           <p className={cn("mb-3", sectionLabelClass)}>Time</p>
-          <div className="relative grid grid-cols-[1fr_1fr_0.78fr] overflow-hidden rounded-xl bg-secondary p-2 text-center">
-            <div className="pointer-events-none absolute inset-x-2 top-1/2 h-10 -translate-y-1/2 rounded-md bg-card" />
+          <div className="relative grid grid-cols-[1fr_1fr_0.84fr] overflow-hidden rounded-[1.25rem] bg-secondary px-3 py-3 text-center">
+            <div className="pointer-events-none absolute inset-x-3 top-1/2 h-10 -translate-y-1/2 rounded-lg bg-card shadow-[0_1px_2px_rgba(76,54,22,0.04)]" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-[linear-gradient(180deg,rgba(242,232,218,0.94)_0%,rgba(242,232,218,0.7)_52%,rgba(242,232,218,0)_100%)]" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-[linear-gradient(0deg,rgba(242,232,218,0.94)_0%,rgba(242,232,218,0.7)_52%,rgba(242,232,218,0)_100%)]" />
             <WheelPicker
               values={hourValues}
               value={hour}
@@ -2105,6 +2465,7 @@ function AlarmScreen({
               value={period}
               onChange={onPeriodChange}
               loop={false}
+              itemClassName="text-[1.05rem] tracking-normal"
             />
           </div>
         </section>
@@ -2431,6 +2792,8 @@ function MantraSessionScreen({
 }) {
   const [currentLoop, setCurrentLoop] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSeconds, setPlaybackSeconds] = useState(0);
+  const [trackDurationSeconds, setTrackDurationSeconds] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isInfinite = count === "infinite";
   const totalLoops = isInfinite ? null : Number.parseInt(count, 10);
@@ -2458,6 +2821,7 @@ function MantraSessionScreen({
 
     const handleEnded = () => {
       if (cancelled) return;
+      setPlaybackSeconds(0);
 
       setCurrentLoop((prev) => {
         const next = prev + 1;
@@ -2472,7 +2836,21 @@ function MantraSessionScreen({
       });
     };
 
+    const handleTimeUpdate = () => {
+      if (!cancelled) {
+        setPlaybackSeconds(audio.currentTime);
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      if (!cancelled && Number.isFinite(audio.duration)) {
+        setTrackDurationSeconds(audio.duration);
+      }
+    };
+
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     void startPlayback();
 
     return () => {
@@ -2480,6 +2858,8 @@ function MantraSessionScreen({
       audio.pause();
       audio.currentTime = 0;
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audioRef.current = null;
     };
   }, [mantra.audioSrc, totalLoops]);
@@ -2490,6 +2870,35 @@ function MantraSessionScreen({
   const strokeOffset = isInfinite
     ? circumference * 0.35
     : circumference - progress * circumference;
+  const parseDurationToSeconds = (value: string) => {
+    const [minutes, seconds] = value.split(":").map((part) => Number.parseInt(part, 10));
+    if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) return 0;
+    return minutes * 60 + seconds;
+  };
+  const formatTime = (value: number) => {
+    const safeValue = Math.max(0, Math.floor(value));
+    const minutes = Math.floor(safeValue / 60);
+    const seconds = safeValue % 60;
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+  };
+  const resolvedTrackDuration = trackDurationSeconds || parseDurationToSeconds(mantra.duration);
+  const togglePlayback = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    try {
+      await audio.play();
+      setIsPlaying(true);
+    } catch {
+      setIsPlaying(false);
+    }
+  };
 
   return (
     <section className="relative mx-auto flex h-dvh w-full max-w-md flex-col overflow-hidden bg-[#f8f0e4] md:hidden">
@@ -2498,7 +2907,25 @@ function MantraSessionScreen({
       <div className="absolute left-1/2 top-[16%] size-[22rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,111,0,0.24)_0%,rgba(255,163,72,0.14)_38%,rgba(255,210,159,0.04)_68%,transparent_78%)] blur-2xl" />
 
       <div className="relative flex h-full flex-col px-5 pt-[max(1.5rem,env(safe-area-inset-top))]">
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pb-6 text-center">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-9 rounded-full bg-white/75 text-foreground shadow-sm backdrop-blur-sm hover:bg-white"
+            onClick={() => {
+              audioRef.current?.pause();
+              audioRef.current && (audioRef.current.currentTime = 0);
+              setIsPlaying(false);
+              onStop();
+            }}
+          >
+            <CaretLeft className="size-5" weight="regular" aria-hidden />
+            <span className="sr-only">Back</span>
+          </Button>
+          <div className="size-9" aria-hidden />
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col items-center px-2 pb-8 pt-10 text-center">
           <div className="flex size-24 items-center justify-center rounded-full bg-[rgba(255,255,255,0.78)] text-primary shadow-[0_18px_44px_rgba(255,120,20,0.18)] backdrop-blur-sm">
             <Quotes className="size-9" weight="regular" aria-hidden />
           </div>
@@ -2509,7 +2936,7 @@ function MantraSessionScreen({
             </h1>
           </div>
 
-          <div className="mt-10 flex items-center justify-center">
+          <div className="mt-10 flex w-full flex-col items-center">
             <div className="relative flex size-52 items-center justify-center">
               <div className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.64)_0%,rgba(255,255,255,0.28)_56%,transparent_74%)] blur-sm" />
               <svg
@@ -2556,22 +2983,46 @@ function MantraSessionScreen({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="-mx-5 mt-auto bg-gradient-to-t from-background/95 via-background/80 to-transparent px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-4">
-          <Button
-            size="lg"
-            className="h-11 w-full rounded-xl bg-primary text-primary-foreground text-sm shadow-none"
-            onClick={() => {
-              audioRef.current?.pause();
-              audioRef.current && (audioRef.current.currentTime = 0);
-              setIsPlaying(false);
-              onStop();
-            }}
-          >
-            Stop Mantra
-          </Button>
+            <div className="mt-7 w-full max-w-[20rem]">
+              <div className="h-1.5 rounded-full bg-[rgba(138,96,43,0.12)]">
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-300"
+                  style={{
+                    width: `${resolvedTrackDuration > 0
+                      ? Math.min((playbackSeconds / resolvedTrackDuration) * 100, 100)
+                      : isInfinite
+                        ? 35
+                        : progress * 100}%`,
+                  }}
+                />
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-[0.95rem] font-medium leading-5 text-[#8a7159]">
+                <span>{formatTime(playbackSeconds)}</span>
+                <span>{formatTime(resolvedTrackDuration)}</span>
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Button
+                  type="button"
+                  size="icon-lg"
+                  className="size-16 rounded-full bg-primary text-primary-foreground shadow-[0_14px_28px_rgba(255,111,0,0.22)] hover:bg-primary/90"
+                  onClick={() => {
+                    void togglePlayback();
+                  }}
+                  aria-label={isPlaying ? "Pause mantra" : "Play mantra"}
+                >
+                  {isPlaying ? (
+                    <Pause className="size-6" weight="fill" aria-hidden />
+                  ) : (
+                    <Play className="size-6 translate-x-[1px]" weight="fill" aria-hidden />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-auto h-6" aria-hidden />
         </div>
       </div>
     </section>
@@ -3098,11 +3549,13 @@ function WheelPicker({
   value,
   onChange,
   loop = true,
+  itemClassName,
 }: {
   values: string[];
   value: string;
   onChange: (value: string) => void;
   loop?: boolean;
+  itemClassName?: string;
 }) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const hasPositionedRef = useRef(false);
@@ -3166,17 +3619,23 @@ function WheelPicker({
   return (
     <div
       ref={scrollRef}
-      className="relative z-10 h-28 snap-y snap-mandatory overflow-y-auto py-9 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="relative z-10 snap-y snap-mandatory overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      style={{
+        height: `${wheelViewportHeight}px`,
+        paddingTop: `${wheelViewportPadding}px`,
+        paddingBottom: `${wheelViewportPadding}px`,
+      }}
       onScroll={handleScroll}
     >
       {renderedValues.map((item, index) => (
         <div
           key={`${item}-${index}`}
           className={cn(
-            "flex h-10 snap-center items-center justify-center text-lg font-medium tabular-nums transition-colors",
+            "flex h-10 snap-center items-center justify-center text-[1.35rem] font-medium leading-none tabular-nums tracking-tight transition-colors",
+            itemClassName,
             index === selectedRenderedIndex
               ? "text-foreground"
-              : "text-muted-foreground/50",
+              : "text-muted-foreground/42",
           )}
         >
           {item}
